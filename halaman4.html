@@ -8,25 +8,32 @@
     font-size: 16px;
     color: #111827;
     width: 100%;
+    height: 100%;
+    display: flex;
   }
 
   .csv-editor .app-shell {
     width: 100%;
     max-width: 960px;
-    padding: 12px 0;
     margin: 0 auto;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .csv-editor .card {
     position: relative;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.4); /* ~60% transparan */
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 24px;
-    border: 2px solid #d4af37; /* emas */
+    border: 2px solid #d4af37;
     box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
-    padding: 28px 32px 24px;
+    padding: 18px 20px 16px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   .csv-editor .card::before {
@@ -43,6 +50,9 @@
   .csv-editor .card-inner {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .csv-editor h1,
@@ -52,13 +62,13 @@
   }
 
   .csv-editor h1 {
-    font-size: 30px;
+    font-size: 26px;
     font-weight: 700;
     color: #0b1120;
   }
 
   .csv-editor h2 {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: #0b1120;
   }
@@ -78,7 +88,7 @@
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
 
   .csv-editor .field-row.inline {
@@ -89,15 +99,15 @@
   .csv-editor input[type="password"] {
     border-radius: 999px;
     border: 2px solid #d4af37;
-    padding: 10px 16px;
-    font-size: 15px;
+    padding: 8px 14px;
+    font-size: 14px;
     outline: none;
     background: rgba(255, 255, 255, 0.8);
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.6),
       0 0 0 1px #d4af37;
-    min-width: 240px;
-    flex: 1 1 260px;
+    min-width: 220px;
+    flex: 1 1 240px;
     transition: box-shadow 0.18s ease, transform 0.12s ease,
                 background 0.18s ease, border-color 0.18s ease;
   }
@@ -119,14 +129,14 @@
     background: radial-gradient(circle at top left,
       rgba(255, 255, 255, 0.95),
       rgba(255, 255, 255, 0.15));
-    padding: 9px 20px;
-    font-size: 14px;
+    padding: 7px 16px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     color: #111827;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     box-shadow:
       0 12px 28px rgba(15, 23, 42, 0.25),
       inset 0 0 0 1px rgba(255, 255, 255, 0.6);
@@ -175,13 +185,13 @@
   .csv-editor .toolbar {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
+    gap: 8px;
+    margin-bottom: 10px;
   }
 
   .csv-editor .toolbar-row {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     justify-content: space-between;
   }
@@ -190,6 +200,27 @@
 
   .csv-editor .toolbar-row-middle .btn:nth-child(2) {
     flex: 1.1;
+  }
+
+  /* AREA EDITOR: header & toolbar statis, tabel scroll sendiri */
+  .csv-editor #editor-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .csv-editor #tableContainer {
+    flex: 1;
+    overflow: auto;          /* hanya tabel yang scroll */
+    touch-action: none;      /* untuk pinch-zoom custom */
+  }
+
+  .csv-editor .table-scroll {
+    min-height: 100%;
+  }
+
+  .csv-editor .table-zoom-wrapper {
+    transform-origin: top left;
   }
 
   .csv-editor .table-wrapper {
@@ -205,13 +236,13 @@
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
     border: 2px solid #d4af37;
-    font-size: 14px;
+    font-size: 13px;
     min-width: 600px;
   }
 
   .csv-editor th,
   .csv-editor td {
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-bottom: 1px solid #d4af37;
   }
 
@@ -235,9 +266,9 @@
     color: #374151;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 999px;
-    padding: 8px 14px;
+    padding: 6px 12px;
     display: inline-flex;
-    margin-top: 12px;
+    margin-top: 8px;
     max-width: 100%;
     white-space: pre-line;
     border: 2px solid #d4af37;
@@ -249,25 +280,19 @@
   .csv-editor .file-subtitle {
     font-size: 13px;
     color: #4b5563;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   /* =============== RESPONSIVE =============== */
 
   @media (max-width: 768px) {
-    .csv-editor .app-shell {
-      padding: 8px 0;
-    }
+    .csv-editor h1 { font-size: 24px; }
+    .csv-editor h2 { font-size: 20px; }
 
     .csv-editor .card {
-      padding: 18px 14px 16px;
+      padding: 14px 12px 10px;
       border-radius: 20px;
-      width: 100%;
-      max-width: 100%;
     }
-
-    .csv-editor h1 { font-size: 26px; }
-    .csv-editor h2 { font-size: 22px; }
 
     .csv-editor .field-row {
       flex-direction: column;
@@ -299,28 +324,22 @@
     }
 
     .csv-editor table {
-      font-size: 13px;
+      font-size: 12px;
       min-width: 480px;
     }
   }
 
   @media (max-width: 480px) {
     .csv-editor { font-size: 15px; }
-    .csv-editor h1 { font-size: 24px; }
-    .csv-editor h2 { font-size: 20px; }
-
-    .csv-editor .card {
-      padding: 16px 10px 14px;
-    }
 
     .csv-editor table {
-      font-size: 12px;
+      font-size: 11px;
       min-width: 420px;
     }
 
     .csv-editor th,
     .csv-editor td {
-      padding: 6px 8px;
+      padding: 4px 6px;
     }
   }
 </style>
@@ -352,7 +371,7 @@
           <label for="ghToken">Token GitHub</label>
           <input type="password" id="ghToken" placeholder="Personal Access Token" />
 
-          <div style="margin-top: 18px;">
+          <div style="margin-top: 14px;">
             <button class="btn btn-primary" id="btnLoad">➡️ Buka & Edit CSV</button>
           </div>
 
@@ -367,20 +386,19 @@
           <div id="editSubtitle" class="file-subtitle"></div>
 
           <div class="toolbar">
-            <!-- Baris 1: OK, + Baris, Refresh -->
             <div class="toolbar-row toolbar-row-middle">
               <button class="btn" id="btnEdit">OK</button>
               <button class="btn" id="btnAddRow">＋ Baris</button>
               <button class="btn" id="btnRefresh">Refresh</button>
             </div>
 
-            <!-- Baris 2: Simpan & Keluar -->
             <div class="toolbar-row">
               <button class="btn btn-primary" id="btnSave">💾 Simpan</button>
               <button class="btn btn-danger" id="btnExit">Keluar</button>
             </div>
           </div>
 
+          <!-- HANYA BAGIAN INI YANG SCROLL & PINCH ZOOM -->
           <div id="tableContainer"></div>
 
           <div id="editStatus" class="status" style="display:none;"></div>
@@ -392,6 +410,10 @@
 </div>
 
 <script>
+/* ====== INTEGRASI DENGAN INDEX: matikan zoom global ====== */
+window.__disableGlobalZoom = true;
+
+/* ====== VAR DOM ====== */
 const csvSelect    = document.getElementById("csvSelect");
 const tokenInput   = document.getElementById("ghToken");
 const btnLoad      = document.getElementById("btnLoad");
@@ -417,6 +439,8 @@ let csvData = [];
 let githubInfo = null;
 let isEditing = true;
 let csvEntries = []; // { name, url }
+
+let tableZoomWrapper = null; // target zoom hanya tabel
 
 const KEY_CSV   = "csvEntries";
 const KEY_TOKEN = "githubToken";
@@ -543,10 +567,11 @@ function toCSV(data) {
   return data.map(r => r.join(",")).join("\n");
 }
 
-/* Render table */
+/* Render table (dengan wrapper scroll & zoom) */
 function renderTable() {
   if (!csvData.length) {
     tableContainer.innerHTML = "<p>Tidak ada data.</p>";
+    tableZoomWrapper = null;
     return;
   }
 
@@ -578,10 +603,21 @@ function renderTable() {
 
   const wrapper = document.createElement("div");
   wrapper.className = "table-wrapper";
-  wrapper.appendChild(table);
+
+  const zoomWrap = document.createElement("div");
+  zoomWrap.className = "table-zoom-wrapper";
+  zoomWrap.appendChild(table);
+
+  const scroll = document.createElement("div");
+  scroll.className = "table-scroll";
+  scroll.appendChild(zoomWrap);
+  wrapper.appendChild(scroll);
 
   tableContainer.innerHTML = "";
   tableContainer.appendChild(wrapper);
+
+  tableZoomWrapper = zoomWrap;
+  applyTableZoom();
 }
 
 function readTableBack() {
@@ -704,9 +740,12 @@ btnSave.addEventListener("click", async () => {
   }
 });
 
-/* Keluar */
+/* Keluar: Kembali ke layar awal, tetap di area Admin */
 btnExit.addEventListener("click", () => {
-  location.reload();
+  editorScreen.classList.add("hidden");
+  startScreen.classList.remove("hidden");
+  tableContainer.innerHTML = "";
+  showEditStatus("");
 });
 
 /* INIT */
@@ -715,6 +754,47 @@ function initCsvEditor() {
   renderCsvSelect();
   loadToken();
 }
-
 initCsvEditor();
+
+/* ==========================================================
+   PINCH-TO-ZOOM HANYA UNTUK TABEL
+========================================================== */
+
+let tblScale = 1;
+let tblStartScale = 1;
+let tblStartDist = 0;
+const tblMin = 0.7;
+const tblMax = 2;
+
+function tblDistance(t1, t2) {
+  const dx = t2.clientX - t1.clientX;
+  const dy = t2.clientY - t1.clientY;
+  return Math.hypot(dx, dy);
+}
+
+function applyTableZoom() {
+  if (tableZoomWrapper) {
+    tableZoomWrapper.style.transform = `scale(${tblScale})`;
+  }
+}
+
+tableContainer.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    tblStartDist = tblDistance(e.touches[0], e.touches[1]);
+    tblStartScale = tblScale;
+  }
+}, { passive: false });
+
+tableContainer.addEventListener("touchmove", (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const newDistance = tblDistance(e.touches[0], e.touches[1]);
+    const factor = newDistance / tblStartDist;
+    tblScale = Math.min(tblMax, Math.max(tblMin, tblStartScale * factor));
+    applyTableZoom();
+  }
+}, { passive: false });
+
+applyTableZoom();
 </script>
