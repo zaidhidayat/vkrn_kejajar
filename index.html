@@ -2,7 +2,9 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Excel Glass Tabs - Preload Offline Sync</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel Glass Tabs - Pinch Zoom Content Only</title>
+
 <style>
 /* ====== GLOBAL ======= */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
@@ -22,8 +24,10 @@ body {
   flex-direction: column;
   border-radius: 10px;
   overflow: hidden;
+
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 /* TITLE BAR */
@@ -33,14 +37,27 @@ body {
 }
 
 /* CONTENT AREA */
-.content-area { flex: 1; display: flex; flex-direction: column; }
+.content-area { 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+}
 
+/* Area scroll + pinch-zoom di dalamnya */
 .inner-content {
   flex: 1;
   padding: 16px;
-  overflow-y: auto;
+  overflow: auto;                 /* saat di-zoom bisa di-scroll */
   background: rgba(255,255,255,0.6);
   backdrop-filter: blur(18px);
+  position: relative;
+  touch-action: none;             /* penting untuk custom pinch */
+}
+
+/* Wrapper yang di-zoom (hanya isi ini yang membesar) */
+.zoom-wrapper {
+  transform-origin: top left;
+  /* scale diatur via JS */
 }
 
 /* ====== TAB BAR ======= */
@@ -51,12 +68,12 @@ body {
   transition: background 0.25s;
 }
 
-/* ====== TAB BUTTON (UPDATED) ======= */
+/* ====== TAB BUTTON ======= */
 .sheet-tab {
   width: 25%;
-  padding: 14px 10px;      /* ← UPDATE */
+  padding: 14px 10px;
   text-align: center;
-  font-size: 13px;         /* ← UPDATE */
+  font-size: 13px;
   line-height: 15px;
   cursor: pointer;
   background: rgba(255,255,255,0.5);
@@ -83,7 +100,7 @@ body {
   box-shadow: 0 0 18px var(--glowColor);
 }
 
-/* SLIDE ANIMATION */
+/* ====== SLIDE ANIMATION ======= */
 .slide-from-right { animation: slideFromRight .28s ease-out; }
 .slide-from-left  { animation: slideFromLeft .28s ease-out; }
 
@@ -95,6 +112,34 @@ body {
   from { opacity:0; transform:translateX(-40px); }
   to   { opacity:1; transform:translateX(0); }
 }
+
+/* ===========================================================
+   📱 RESPONSIVE UNTUK SMARTPHONE
+=========================================================== */
+@media (max-width: 600px) {
+
+  body { padding: 0; }
+
+  .excel-wrapper {
+    border-radius: 0;
+    height: 100vh;
+  }
+
+  .inner-content { padding: 10px; }
+
+  .sheet-tabs-bar { height: 48px; }
+
+  .sheet-tab {
+    padding: 10px 4px;
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .sheet-tab.active {
+    transform: translateY(-2px);
+    border-radius: 10px 10px 0 0;
+  }
+}
 </style>
 </head>
 <body>
@@ -105,18 +150,36 @@ body {
 
   <div class="content-area">
 
-    <div class="inner-content" id="contentArea">Memuat...</div>
+    <div class="inner-content" id="innerContent">
+      <!-- YANG DI-ZOOM HANYA BAGIAN INI -->
+      <div class="zoom-wrapper" id="zoomWrapper">
+        <div id="contentArea">Memuat...</div>
+      </div>
+    </div>
 
     <div class="title-bar" id="colorBar2"></div>
 
     <div class="sheet-tabs-bar" id="tabsBar">
-      <div class="sheet-tab active" data-file="halaman1.html" data-color="#107C41">KRN<br>Bu Azmil</div>
-      <div class="sheet-tab" data-file="halaman2.html" data-color="#2F5597">KRN<br>Hexing</div>
-      <div class="sheet-tab" data-file="halaman3.html" data-color="#C55A11">KRN<br>Sanxing</div>
-      <div class="sheet-tab" data-file="halaman4.html" data-color="#7030A0">Admin<br>Area</div>
-    </div>
 
+      <div class="sheet-tab active" data-file="halaman1.html" data-color="#107C41">
+        KRN<br>Bu Azmil
+      </div>
+
+      <div class="sheet-tab" data-file="halaman2.html" data-color="#2F5597">
+        KRN<br>Hexing
+      </div>
+
+      <div class="sheet-tab" data-file="halaman3.html" data-color="#C55A11">
+        KRN<br>Sanxing
+      </div>
+
+      <div class="sheet-tab" data-file="halaman4.html" data-color="#7030A0">
+        Admin<br>login
+      </div>
+
+    </div>
   </div>
+
 </div>
 
 <script>
@@ -129,6 +192,8 @@ const contentArea = document.getElementById("contentArea");
 const colorBar = document.getElementById("colorBar");
 const colorBar2 = document.getElementById("colorBar2");
 const tabsBar = document.getElementById("tabsBar");
+const innerContent = document.getElementById("innerContent");
+const zoomWrapper = document.getElementById("zoomWrapper");
 
 let cachedPages = {};
 let currentIndex = 0;
@@ -162,10 +227,9 @@ function loadPageFromCache(file, direction) {
   const html = cachedPages[file] || "<p>Error memuat halaman.</p>";
   contentArea.innerHTML = html;
 
-  contentArea.classList.remove("slide-from-right","slide-from-left");
-  void contentArea.offsetWidth;
-
-  contentArea.classList.add(
+  zoomWrapper.classList.remove("slide-from-right","slide-from-left");
+  void zoomWrapper.offsetWidth;
+  zoomWrapper.classList.add(
     direction === "right" ? "slide-from-right" : "slide-from-left"
   );
 }
@@ -231,7 +295,51 @@ tabs.forEach((tab, index) => {
     currentIndex = index;
   });
 });
+
+/* ==========================================================
+   PINCH-TO-ZOOM HANYA UNTUK ISI HALAMAN
+========================================================== */
+
+let currentScale = 1;
+let startScale = 1;
+let startDistance = 0;
+const minScale = 0.7;
+const maxScale = 1.8;
+
+function distance(t1, t2) {
+  const dx = t2.clientX - t1.clientX;
+  const dy = t2.clientY - t1.clientY;
+  return Math.hypot(dx, dy);
+}
+
+function applyZoom() {
+  zoomWrapper.style.transform = `scale(${currentScale})`;
+}
+
+// handle pinch di innerContent
+innerContent.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    startDistance = distance(e.touches[0], e.touches[1]);
+    startScale = currentScale;
+  }
+}, { passive: false });
+
+innerContent.addEventListener("touchmove", (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const newDistance = distance(e.touches[0], e.touches[1]);
+    const factor = newDistance / startDistance;
+    currentScale = Math.min(maxScale, Math.max(minScale, startScale * factor));
+    applyZoom();
+  }
+}, { passive: false });
+
+// kalau lepas semua jari, biarkan saja (scale terakhir tetap)
+
+/* set awal */
+applyZoom();
 </script>
 
 </body>
-</html>
+      </html>
