@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Excel Glass Tabs - Preload Offline Sync</title>
+<style>
+/* ====== GLOBAL ======= */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+
+body {
+  height: 100vh;
+  background: #d3d3d3;
+  padding: 2px 0;
+}
+
+/* ====== WRAPPER ======= */
+.excel-wrapper {
+  width: 100vw;
+  height: calc(100vh - 4px);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(14px);
+}
+
+/* TITLE BAR */
+.title-bar {
+  height: 4px;
+  transition: background 0.3s;
+}
+
+/* CONTENT AREA */
+.content-area { flex: 1; display: flex; flex-direction: column; }
+
+.inner-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(18px);
+}
+
+/* ====== TAB BAR ======= */
+.sheet-tabs-bar {
+  height: 60px;
+  display: flex;
+  align-items: flex-end;
+  transition: background 0.25s;
+}
+
+/* ====== TAB BUTTON (UPDATED) ======= */
+.sheet-tab {
+  width: 25%;
+  padding: 14px 10px;      /* ← UPDATE */
+  text-align: center;
+  font-size: 13px;         /* ← UPDATE */
+  line-height: 15px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.5);
+  border: none;
+  color: #000;
+  margin-top: 10px;
+  transition: 0.15s;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sheet-tab:hover {
+  background: rgba(255,255,255,0.85);
+}
+
+.sheet-tab.active {
+  color: white;
+  font-weight: 700;
+  transform: translateY(-3px);
+  background: var(--activeColor);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 0 18px var(--glowColor);
+}
+
+/* SLIDE ANIMATION */
+.slide-from-right { animation: slideFromRight .28s ease-out; }
+.slide-from-left  { animation: slideFromLeft .28s ease-out; }
+
+@keyframes slideFromRight {
+  from { opacity:0; transform:translateX(40px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes slideFromLeft {
+  from { opacity:0; transform:translateX(-40px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="excel-wrapper">
+
+  <div class="title-bar" id="colorBar"></div>
+
+  <div class="content-area">
+
+    <div class="inner-content" id="contentArea">Memuat...</div>
+
+    <div class="title-bar" id="colorBar2"></div>
+
+    <div class="sheet-tabs-bar" id="tabsBar">
+      <div class="sheet-tab active" data-file="halaman1.html" data-color="#107C41">KRN<br>Bu Azmil</div>
+      <div class="sheet-tab" data-file="halaman2.html" data-color="#2F5597">KRN<br>Hexing</div>
+      <div class="sheet-tab" data-file="halaman3.html" data-color="#C55A11">KRN<br>Sanxing</div>
+      <div class="sheet-tab" data-file="halaman4.html" data-color="#7030A0">Admin<br>Area</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   FAST MODE + OFFLINE CACHE + SYNC ONLINE
+========================================================== */
+
+const tabs = document.querySelectorAll(".sheet-tab");
+const contentArea = document.getElementById("contentArea");
+const colorBar = document.getElementById("colorBar");
+const colorBar2 = document.getElementById("colorBar2");
+const tabsBar = document.getElementById("tabsBar");
+
+let cachedPages = {};
+let currentIndex = 0;
+
+const FILES = {
+  0: "halaman1.html",
+  1: "halaman2.html",
+  2: "halaman3.html",
+  3: "halaman4.html"
+};
+
+/* PRELOAD ALL */
+async function preloadAllPages() {
+  for (let i = 0; i < 4; i++) {
+    const file = FILES[i];
+
+    try {
+      const res = await fetch(file);
+      const html = await res.text();
+      cachedPages[file] = html;
+      localStorage.setItem("page_" + file, html);
+    } catch {
+      const local = localStorage.getItem("page_" + file);
+      if (local) cachedPages[file] = local;
+    }
+  }
+}
+
+/* LOAD FROM CACHE */
+function loadPageFromCache(file, direction) {
+  const html = cachedPages[file] || "<p>Error memuat halaman.</p>";
+  contentArea.innerHTML = html;
+
+  contentArea.classList.remove("slide-from-right","slide-from-left");
+  void contentArea.offsetWidth;
+
+  contentArea.classList.add(
+    direction === "right" ? "slide-from-right" : "slide-from-left"
+  );
+}
+
+/* APPLY THEME */
+function applyTheme(tab) {
+  const color = tab.dataset.color;
+  const glow = color + "88";
+  tab.style.setProperty("--activeColor", color);
+  tab.style.setProperty("--glowColor", glow);
+
+  tabsBar.style.background = color;
+  colorBar.style.background = color;
+  colorBar2.style.background = color;
+}
+
+/* RADIUS LOGIC */
+function applyRadius(index) {
+  tabs.forEach(t => t.style.borderRadius = "0");
+
+  if (index === 0) {
+    tabs[1].style.borderRadius = "10px 0 0 0";
+  }
+  else if (index === 1) {
+    tabs[0].style.borderRadius = "0 10px 0 0";
+    tabs[2].style.borderRadius = "10px 0 0 0";
+  }
+  else if (index === 2) {
+    tabs[1].style.borderRadius = "0 10px 0 0";
+    tabs[3].style.borderRadius = "10px 0 0 0";
+  }
+  else if (index === 3) {
+    tabs[2].style.borderRadius = "0 10px 0 0";
+  }
+}
+
+/* SYNC ONLINE */
+window.addEventListener("online", preloadAllPages);
+
+/* INIT */
+(async () => {
+  await preloadAllPages();
+  applyTheme(tabs[0]);
+  applyRadius(0);
+  loadPageFromCache(FILES[0], "right");
+})();
+
+/* TAB CLICK */
+tabs.forEach((tab, index) => {
+  tab.addEventListener("click", () => {
+    if (index === currentIndex) return;
+
+    const direction = index > currentIndex ? "right" : "left";
+    const file = FILES[index];
+
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+
+    applyTheme(tab);
+    applyRadius(index);
+    loadPageFromCache(file, direction);
+
+    currentIndex = index;
+  });
+});
+</script>
+
+</body>
+</html>
