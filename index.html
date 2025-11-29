@@ -7,18 +7,25 @@
 
 <style>
 /* ====== GLOBAL ======= */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
 
 body {
   height: 100vh;
   background: #d3d3d3;
-  padding: 2px 0;
+  /* padding atas kecil, bawah 56px supaya berhenti di atas nav bar HP */
+  padding: 2px 0 56px;
 }
 
 /* ====== WRAPPER ======= */
 .excel-wrapper {
   width: 100vw;
-  height: calc(100vh - 4px);
+  /* tinggi dikurangi “ruang nav” 56px */
+  height: calc(100vh - 56px);
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -30,17 +37,17 @@ body {
   -webkit-backdrop-filter: blur(14px);
 }
 
-/* TITLE BAR */
+/* TITLE BAR TIPIS */
 .title-bar {
   height: 4px;
   transition: background 0.3s;
 }
 
 /* CONTENT AREA */
-.content-area { 
-  flex: 1; 
-  display: flex; 
-  flex-direction: column; 
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Area scroll + pinch-zoom di dalamnya */
@@ -57,7 +64,6 @@ body {
 /* Wrapper yang di-zoom (hanya isi ini yang membesar) */
 .zoom-wrapper {
   transform-origin: top left;
-  /* scale diatur via JS */
 }
 
 /* ====== TAB BAR ======= */
@@ -118,11 +124,14 @@ body {
 =========================================================== */
 @media (max-width: 600px) {
 
-  body { padding: 0; }
+  body {
+    /* di HP, jangan ada padding samping; tetap sisakan ruang bawah 56px */
+    padding: 0 0 56px;
+  }
 
   .excel-wrapper {
     border-radius: 0;
-    height: 100vh;
+    height: calc(100vh - 56px);
   }
 
   .inner-content { padding: 10px; }
@@ -316,7 +325,6 @@ function applyZoom() {
   zoomWrapper.style.transform = `scale(${currentScale})`;
 }
 
-// handle pinch di innerContent
 innerContent.addEventListener("touchstart", (e) => {
   if (e.touches.length === 2) {
     e.preventDefault();
@@ -335,11 +343,9 @@ innerContent.addEventListener("touchmove", (e) => {
   }
 }, { passive: false });
 
-// kalau lepas semua jari, biarkan saja (scale terakhir tetap)
-
 /* set awal */
 applyZoom();
 </script>
 
 </body>
-      </html>
+</html>
