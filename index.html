@@ -214,35 +214,6 @@ const FILES = {
   3: "halaman4.html"
 };
 
-/* ===== helper untuk memasukkan HTML + menjalankan <script> ===== */
-function injectHtmlWithScripts(target, html) {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-
-  const scriptNodes = Array.from(tmp.querySelectorAll("script"));
-  // hapus script dari fragment
-  scriptNodes.forEach(s => s.parentNode.removeChild(s));
-
-  // masukkan HTML tanpa script
-  target.innerHTML = "";
-  while (tmp.firstChild) {
-    target.appendChild(tmp.firstChild);
-  }
-
-  // jalankan script satu per satu
-  scriptNodes.forEach(oldScript => {
-    const newScript = document.createElement("script");
-    // copy attribute (src, type, dll)
-    Array.from(oldScript.attributes).forEach(attr => {
-      newScript.setAttribute(attr.name, attr.value);
-    });
-    // copy isi
-    newScript.textContent = oldScript.textContent;
-    // append ke target (atau document.body); di sini ke target
-    target.appendChild(newScript);
-  });
-}
-
 /* PRELOAD ALL */
 async function preloadAllPages() {
   for (let i = 0; i < 4; i++) {
@@ -260,11 +231,10 @@ async function preloadAllPages() {
   }
 }
 
-/* LOAD FROM CACHE + jalankan script */
+/* LOAD FROM CACHE */
 function loadPageFromCache(file, direction) {
-  const html = cachedPages[file] || "<p>Tidak bisa memuat halaman.</p>";
-
-  injectHtmlWithScripts(contentArea, html);   // <-- perbedaan utama
+  const html = cachedPages[file] || "<p>Error memuat halaman.</p>";
+  contentArea.innerHTML = html;
 
   zoomWrapper.classList.remove("slide-from-right","slide-from-left");
   void zoomWrapper.offsetWidth;
