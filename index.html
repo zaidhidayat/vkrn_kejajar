@@ -17,16 +17,14 @@
 body {
   height: 100vh;
   background: #d3d3d3;
-  /* padding atas kecil, bawah 56px supaya berhenti di atas nav bar HP */
   padding: 2px 0 56px;
+  overflow: hidden;
 }
 
 /* ====== WRAPPER ======= */
 .excel-wrapper {
   width: 100vw;
-  /* tinggi dikurangi “ruang nav” 56px */
   height: calc(100vh - 56px);
-  margin: auto;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
@@ -37,7 +35,7 @@ body {
   -webkit-backdrop-filter: blur(14px);
 }
 
-/* TITLE BAR TIPIS */
+/* TITLE BAR */
 .title-bar {
   height: 4px;
   transition: background 0.3s;
@@ -48,22 +46,23 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-/* Area scroll + pinch-zoom di dalamnya */
+/* SCROLL + PINCH */
 .inner-content {
   flex: 1;
-  padding: 16px;
-  overflow: auto;                 /* saat di-zoom bisa di-scroll */
+  padding: 0;
+  overflow: auto;
   background: rgba(255,255,255,0.6);
   backdrop-filter: blur(18px);
-  position: relative;
-  touch-action: none;             /* penting untuk custom pinch */
+  touch-action: none;
 }
 
-/* Wrapper yang di-zoom (hanya isi ini yang membesar) */
+/* wrapper zoom */
 .zoom-wrapper {
   transform-origin: top left;
+  padding: 2px;
 }
 
 /* ====== TAB BAR ======= */
@@ -74,27 +73,20 @@ body {
   transition: background 0.25s;
 }
 
-/* ====== TAB BUTTON ======= */
+/* TAB BUTTON */
 .sheet-tab {
   width: 25%;
   padding: 14px 10px;
   text-align: center;
   font-size: 13px;
-  line-height: 15px;
   cursor: pointer;
   background: rgba(255,255,255,0.5);
-  border: none;
   color: #000;
   margin-top: 10px;
   transition: 0.15s;
-  border-radius: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.sheet-tab:hover {
-  background: rgba(255,255,255,0.85);
 }
 
 .sheet-tab.active {
@@ -106,61 +98,116 @@ body {
   box-shadow: 0 0 18px var(--glowColor);
 }
 
-/* ====== SLIDE ANIMATION ======= */
+/* Animations */
 .slide-from-right { animation: slideFromRight .28s ease-out; }
-.slide-from-left  { animation: slideFromLeft .28s ease-out; }
+.slide-from-left  { animation: slideFromLeft  .28s ease-out; }
 
-@keyframes slideFromRight {
-  from { opacity:0; transform:translateX(40px); }
-  to   { opacity:1; transform:translateX(0); }
-}
-@keyframes slideFromLeft {
-  from { opacity:0; transform:translateX(-40px); }
-  to   { opacity:1; transform:translateX(0); }
+@keyframes slideFromRight { from {opacity:0; transform:translateX(40px);} to {opacity:1; transform:translateX(0);} }
+@keyframes slideFromLeft  { from {opacity:0; transform:translateX(-40px);} to {opacity:1; transform:translateX(0);} }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  body { padding: 0 0 56px; }
+  .excel-wrapper { border-radius: 0; height: calc(100vh - 56px); }
+  .sheet-tabs-bar { height: 48px; }
+  .sheet-tab { padding: 10px 4px; font-size: 11px; }
 }
 
 /* ===========================================================
-   📱 RESPONSIVE UNTUK SMARTPHONE
+   KOTAK & KARTU KRN
 =========================================================== */
-@media (max-width: 600px) {
 
-  body {
-    /* di HP, jangan ada padding samping; tetap sisakan ruang bawah 56px */
-    padding: 0 0 56px;
-  }
+.krn-box {
+  width: 100%;
+  height: calc(100vh - 56px - 4px - 60px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 
-  .excel-wrapper {
-    border-radius: 0;
-    height: calc(100vh - 56px);
-  }
-
-  .inner-content { padding: 10px; }
-
-  .sheet-tabs-bar { height: 48px; }
-
-  .sheet-tab {
-    padding: 10px 4px;
-    font-size: 11px;
-    line-height: 13px;
-  }
-
-  .sheet-tab.active {
-    transform: translateY(-2px);
-    border-radius: 10px 10px 0 0;
-  }
+  background: linear-gradient(180deg,#E3F2FF 0%,#B8DCFF 50%,#8CC4FF 100%);
+  padding: 10px;
+  border-radius: 12px;
+  border: 3px solid black;
 }
+
+.krn-img {
+  height: 40%;
+  width: 100%;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 14px;
+}
+
+.krn-title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  color: #003366;
+}
+
+.krn-card {
+  flex: 1;
+  height: 20%;
+  border-radius: 18px;
+  margin: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 4px 15px #00000030;
+  border: none;
+  transition: .15s;
+}
+
+.card-green  { background: #1FA855; }
+.card-orange { background: #FF8A2B; }
+.card-blue   { background: #2F5597; }
+.card-purple { background: #7030A0; }
+
+.krn-card:active { transform: scale(.97); box-shadow: 0 2px 8px #00000022; }
+
+.admin-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 4px 10px;
+}
+
+.admin-form label { font-size: 14px; }
+
+.admin-form input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #999;
+  font-size: 14px;
+}
+
+.admin-btn {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: #7030A0;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.admin-btn:active { transform: scale(.97); }
 </style>
 </head>
+
 <body>
 
 <div class="excel-wrapper">
-
   <div class="title-bar" id="colorBar"></div>
 
   <div class="content-area">
-
     <div class="inner-content" id="innerContent">
-      <!-- YANG DI-ZOOM HANYA BAGIAN INI -->
       <div class="zoom-wrapper" id="zoomWrapper">
         <div id="contentArea">Memuat...</div>
       </div>
@@ -170,182 +217,167 @@ body {
 
     <div class="sheet-tabs-bar" id="tabsBar">
 
-      <div class="sheet-tab active" data-file="halaman1.html" data-color="#107C41">
+      <div class="sheet-tab active" data-file="inline-azmil" data-color="#107C41">
         KRN<br>Bu Azmil
       </div>
 
-      <div class="sheet-tab" data-file="halaman2.html" data-color="#2F5597">
+      <div class="sheet-tab" data-file="inline-hexing" data-color="#2F5597">
         KRN<br>Hexing
       </div>
 
-      <div class="sheet-tab" data-file="halaman3.html" data-color="#C55A11">
+      <div class="sheet-tab" data-file="inline-sanxing" data-color="#C55A11">
         KRN<br>Sanxing
       </div>
 
-      <div class="sheet-tab" data-file="halaman4.html" data-color="#7030A0">
+      <div class="sheet-tab" data-file="inline-admin" data-color="#7030A0">
         Admin<br>login
       </div>
 
     </div>
   </div>
-
 </div>
 
 <script>
 /* ==========================================================
-   FAST MODE + OFFLINE CACHE + SYNC ONLINE
+   INLINE CONTENT
 ========================================================== */
 
-const tabs = document.querySelectorAll(".sheet-tab");
-const contentArea = document.getElementById("contentArea");
-const colorBar = document.getElementById("colorBar");
-const colorBar2 = document.getElementById("colorBar2");
-const tabsBar = document.getElementById("tabsBar");
-const innerContent = document.getElementById("innerContent");
-const zoomWrapper = document.getElementById("zoomWrapper");
+const INLINE_AZMIL = `
+  <div class="krn-box">
+    <div class="krn-title">KRN Bu Azmil</div>
+    <img class="krn-img" src="https://iili.io/fn43jh7.png">
+    <div class="krn-card card-green" onclick="alert('Pemasangan Bu Azmil')">Pemasangan</div>
+    <div class="krn-card card-orange" onclick="alert('Laporan Bu Azmil')">Lihat Laporan</div>
+  </div>
+`;
 
-let cachedPages = {};
-let currentIndex = 0;
+const INLINE_HEXING = `
+  <div class="krn-box">
+    <div class="krn-title">KRN Hexing</div>
+    <img class="krn-img" src="https://iili.io/fnPlIaa.jpg">
+    <div class="krn-card card-green" onclick="alert('Pemasangan Hexing')">Pemasangan</div>
+    <div class="krn-card card-orange" onclick="alert('Laporan Hexing')">Lihat Laporan</div>
+  </div>
+`;
 
-const FILES = {
-  0: "halaman1.html",
-  1: "halaman2.html",
-  2: "halaman3.html",
-  3: "halaman4.html"
-};
+const INLINE_SANXING = `
+  <div class="krn-box">
+    <div class="krn-title">KRN Sanxing</div>
+    <img class="krn-img" src="https://iili.io/fnPlT8J.png">
+    <div class="krn-card card-green" onclick="alert('Pemasangan Sanxing')">Pemasangan</div>
+    <div class="krn-card card-orange" onclick="alert('Laporan Sanxing')">Lihat Laporan</div>
+  </div>
+`;
 
-/* PRELOAD ALL */
-async function preloadAllPages() {
-  for (let i = 0; i < 4; i++) {
-    const file = FILES[i];
+const INLINE_ADMIN = `
+  <div class="krn-box">
+    <div class="krn-title">Admin Area</div>
+    <div class="admin-form">
+      <label>Username</label>
+      <input type="text">
+      <label>Password</label>
+      <input type="password">
+      <button class="admin-btn" onclick="alert('Login')">Login</button>
+    </div>
+  </div>
+`;
 
-    try {
-      const res = await fetch(file);
-      const html = await res.text();
-      cachedPages[file] = html;
-      localStorage.setItem("page_" + file, html);
-    } catch {
-      const local = localStorage.getItem("page_" + file);
-      if (local) cachedPages[file] = local;
-    }
-  }
+/* ==========================================================
+   TAB SYSTEM
+========================================================== */
+
+const tabs=document.querySelectorAll(".sheet-tab");
+const contentArea=document.getElementById("contentArea");
+const colorBar=document.getElementById("colorBar");
+const colorBar2=document.getElementById("colorBar2");
+const tabsBar=document.getElementById("tabsBar");
+const innerContent=document.getElementById("innerContent");
+const zoomWrapper=document.getElementById("zoomWrapper");
+
+let currentIndex=0;
+
+function getInlineContent(src){
+  if(src==="inline-azmil")return INLINE_AZMIL;
+  if(src==="inline-hexing")return INLINE_HEXING;
+  if(src==="inline-sanxing")return INLINE_SANXING;
+  if(src==="inline-admin")return INLINE_ADMIN;
+  return "Error";
 }
 
-/* LOAD FROM CACHE */
-function loadPageFromCache(file, direction) {
-  const html = cachedPages[file] || "<p>Error memuat halaman.</p>";
-  contentArea.innerHTML = html;
+function loadPage(src,dir){
+  contentArea.innerHTML=getInlineContent(src);
 
   zoomWrapper.classList.remove("slide-from-right","slide-from-left");
   void zoomWrapper.offsetWidth;
-  zoomWrapper.classList.add(
-    direction === "right" ? "slide-from-right" : "slide-from-left"
-  );
+  zoomWrapper.classList.add(dir==="right"?"slide-from-right":"slide-from-left");
 }
 
-/* APPLY THEME */
-function applyTheme(tab) {
-  const color = tab.dataset.color;
-  const glow = color + "88";
-  tab.style.setProperty("--activeColor", color);
-  tab.style.setProperty("--glowColor", glow);
-
-  tabsBar.style.background = color;
-  colorBar.style.background = color;
-  colorBar2.style.background = color;
+function applyTheme(tab){
+  const c=tab.dataset.color, g=c+"88";
+  tab.style.setProperty("--activeColor",c);
+  tab.style.setProperty("--glowColor",g);
+  colorBar.style.background=c;
+  colorBar2.style.background=c;
+  tabsBar.style.background=c;
 }
 
-/* RADIUS LOGIC */
-function applyRadius(index) {
-  tabs.forEach(t => t.style.borderRadius = "0");
-
-  if (index === 0) {
-    tabs[1].style.borderRadius = "10px 0 0 0";
-  }
-  else if (index === 1) {
-    tabs[0].style.borderRadius = "0 10px 0 0";
-    tabs[2].style.borderRadius = "10px 0 0 0";
-  }
-  else if (index === 2) {
-    tabs[1].style.borderRadius = "0 10px 0 0";
-    tabs[3].style.borderRadius = "10px 0 0 0";
-  }
-  else if (index === 3) {
-    tabs[2].style.borderRadius = "0 10px 0 0";
-  }
+function applyRadius(i){
+  tabs.forEach(t=>t.style.borderRadius='0');
+  if(i===0)tabs[1].style.borderRadius="10px 0 0 0";
+  if(i===1){tabs[0].style.borderRadius="0 10px 0 0";tabs[2].style.borderRadius="10px 0 0 0";}
+  if(i===2){tabs[1].style.borderRadius="0 10px 0 0";tabs[3].style.borderRadius="10px 0 0 0";}
+  if(i===3)tabs[2].style.borderRadius="0 10px 0 0";
 }
 
-/* SYNC ONLINE */
-window.addEventListener("online", preloadAllPages);
-
-/* INIT */
-(async () => {
-  await preloadAllPages();
+(function init(){
   applyTheme(tabs[0]);
   applyRadius(0);
-  loadPageFromCache(FILES[0], "right");
+  loadPage("inline-azmil","right");
 })();
 
-/* TAB CLICK */
-tabs.forEach((tab, index) => {
-  tab.addEventListener("click", () => {
-    if (index === currentIndex) return;
-
-    const direction = index > currentIndex ? "right" : "left";
-    const file = FILES[index];
-
-    tabs.forEach(t => t.classList.remove("active"));
+tabs.forEach((tab,i)=>{
+  tab.addEventListener("click",()=>{
+    if(i===currentIndex)return;
+    const dir=i>currentIndex?"right":"left";
+    tabs.forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
-
     applyTheme(tab);
-    applyRadius(index);
-    loadPageFromCache(file, direction);
-
-    currentIndex = index;
+    applyRadius(i);
+    loadPage(tab.dataset.file,dir);
+    currentIndex=i;
   });
 });
 
 /* ==========================================================
-   PINCH-TO-ZOOM HANYA UNTUK ISI HALAMAN
+   PINCH ZOOM – UPDATED (no zoom out)
 ========================================================== */
 
-let currentScale = 1;
-let startScale = 1;
-let startDistance = 0;
-const minScale = 0.7;
-const maxScale = 1.8;
+let currentScale=1,startScale=1,startDistance=0;
+const minScale=1;      /* ⬅️ ZOOM OUT MAKSIMAL 100% */
+const maxScale=1.8;
 
-function distance(t1, t2) {
-  const dx = t2.clientX - t1.clientX;
-  const dy = t2.clientY - t1.clientY;
-  return Math.hypot(dx, dy);
-}
+function distance(t1,t2){ return Math.hypot(t2.clientX-t1.clientX,t2.clientY-t1.clientY); }
+function applyZoom(){ zoomWrapper.style.transform=`scale(${currentScale})`; }
 
-function applyZoom() {
-  zoomWrapper.style.transform = `scale(${currentScale})`;
-}
-
-innerContent.addEventListener("touchstart", (e) => {
-  if (e.touches.length === 2) {
+innerContent.addEventListener("touchstart",e=>{
+  if(e.touches.length===2){
     e.preventDefault();
-    startDistance = distance(e.touches[0], e.touches[1]);
-    startScale = currentScale;
+    startDistance=distance(e.touches[0],e.touches[1]);
+    startScale=currentScale;
   }
-}, { passive: false });
+},{passive:false});
 
-innerContent.addEventListener("touchmove", (e) => {
-  if (e.touches.length === 2) {
+innerContent.addEventListener("touchmove",e=>{
+  if(e.touches.length===2){
     e.preventDefault();
-    const newDistance = distance(e.touches[0], e.touches[1]);
-    const factor = newDistance / startDistance;
-    currentScale = Math.min(maxScale, Math.max(minScale, startScale * factor));
+    const newDist=distance(e.touches[0],e.touches[1]);
+    const factor=newDist/startDistance;
+    currentScale=Math.min(maxScale,Math.max(minScale,startScale*factor));
     applyZoom();
   }
-}, { passive: false });
+},{passive:false});
 
-/* set awal */
 applyZoom();
 </script>
-
 </body>
 </html>
