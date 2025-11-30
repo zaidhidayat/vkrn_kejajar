@@ -168,7 +168,7 @@ body {
   z-index: 0;
 }
 
-/* OVERLAY GELAP BAWAH */
+/* OVERLAY GELAP BAWAH (boleh tetap, tertutup area putih di bawah) */
 .krn-card::after {
   content: "";
   position: absolute;
@@ -183,28 +183,29 @@ body {
   z-index: 0;
 }
 
-/* TEKS NYALA NEON + OUTLINE */
+/* TEKS BAGIAN BAWAH 25% DENGAN BACKGROUND PUTIH TANPA EFEK */
 .krn-card span {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 10px;
-  padding: 10px 12px;
-  font-size: 16px;
-  line-height: 1.25;
-  font-weight: 800;
-  text-align: center;
-  color: #ffffff;
+  bottom: 0;
+  height: 25%;
+  padding: 8px 10px;
+  background: #ffffff;
+  color: #000000;
   z-index: 1;
 
-  text-shadow:
-    0 0 6px  #00ffe5,
-    0 0 12px #00ffe5,
-    0 0 18px #00ffe5,
-    -2px -2px 2px #000,
-     2px -2px 2px #000,
-    -2px  2px 2px #000,
-     2px  2px 2px #000;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 600;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* tidak ada efek neon / bayangan */
+  text-shadow: none;
 }
 
 /* ZOOM-IN ANIMASI */
@@ -301,7 +302,6 @@ const INLINE_AZMIL = `
 
         <span>
           Untuk pemasangan ganti meter,<br>
-          klik disini.<br>
           Informasi dan form untuk laporan ada disini.
         </span>
       </div>
@@ -434,4 +434,4 @@ innerContent.addEventListener("touchmove",e=>{
 applyZoom();
 </script>
 </body>
-</html>
+  </html>
