@@ -111,7 +111,6 @@
       cursor: pointer;
     }
 
-    /* THUMBNAIL PDF-STYLE */
     .download-thumb {
       width: 60px;
       height: 80px;
@@ -123,7 +122,6 @@
       background:#ffffff;
     }
 
-    /* TEKS 2 KOLOM */
     .info-grid {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -175,26 +173,32 @@
     /* VIEWER GAMBAR & TOMBOL KEMBALI */
     .viewer {
       padding: 12px 12px 90px;
+      display:flex;
+      flex-direction:column;
     }
 
     .viewer-img-wrapper {
-      display: flex;
-      justify-content: center;
+      flex:1;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      overflow:hidden;          /* gambar membesar tapi tidak “nutup” yang lain */
     }
 
     .viewer-img {
-      max-width: 100%;
+      max-width:100%;
+      max-height:100%;
       border-radius: 12px;
       border: 1px solid var(--gold);
-      transform-origin: center center;
+      transform-origin:center center;
       transition: transform 0.6s ease;
     }
 
+    /* otomatis zoom in (penuh layar) dan fokus ke bagian tengah-atas */
     .viewer-img.zoom-in {
-      transform: scale(2);
+      transform: scale(2) translateY(-10%);
     }
 
-    /* tombol kembali di BAWAH gambar, besar & oranye */
     .viewer-back {
       margin-top: 12px;
       display: flex;
@@ -247,7 +251,7 @@
       display: block;
     }
 
-    /* FORM WHATSAPP – lebih besar & di tengah */
+    /* FORM WHATSAPP */
     .wa-form {
       position: fixed;
       left: 50%;
@@ -345,9 +349,7 @@
     @media (max-width: 360px) {
       .header-title { font-size: 14px; }
       .download-thumb { width: 52px; height: 72px; }
-      .wa-form-label {
-        min-width: 90px;
-      }
+      .wa-form-label { min-width: 90px; }
     }
   </style>
 </head>
@@ -441,9 +443,7 @@
 </nav>
 
 <script>
-// ------------------------------
-// 1. Daftar semua file gambar
-// ------------------------------
+// 1. Daftar file
 const files = [
   "akt kol sanxing hidayat-1.webp","akt kol sanxing hidayat-2.webp","akt kol sanxing hidayat-3.webp",
   "akt kol sanxing hidayat-4.webp","akt kol sanxing hidayat-5.webp","akt kol sanxing hidayat-6.webp",
@@ -473,9 +473,7 @@ const files = [
   "akt kol sanxing hidayat-76.webp","akt kol sanxing hidayat-77.webp"
 ];
 
-// ------------------------------
-// 2. Mapping filename -> ID Pel
-// ------------------------------
+// 2. Map IDPEL
 const idPelMap = {
   "akt kol sanxing hidayat-10.webp":"522052132974",
   "akt kol sanxing hidayat-11.webp":"522051779331",
@@ -556,33 +554,27 @@ const idPelMap = {
   "akt kol sanxing hidayat-9.webp":"522052132414"
 };
 
-// ------------------------------
-// 3. Ambil & parse CSV sanxing1
-// ------------------------------
+// 3. CSV
 let dataSanxing = {};
 let currentSearchTerm = "";
 let currentSelected = null;
 let lastScrollY = 0;
+let isZoomed = false;
 
-// parser CSV sederhana
 function parseCsvLine(line, delim = ",") {
   const result = [];
   let current = "";
   let inQuotes = false;
-
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
-
     if (ch === '"') {
       if (inQuotes && line[i + 1] === '"') {
-        current += '"';
-        i++;
+        current += '"'; i++;
       } else {
         inQuotes = !inQuotes;
       }
     } else if (ch === delim && !inQuotes) {
-      result.push(current);
-      current = "";
+      result.push(current); current = "";
     } else {
       current += ch;
     }
@@ -595,14 +587,10 @@ fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanx
   .then(r => r.text())
   .then(text => {
     const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-    if (!lines.length) {
-      renderCards();
-      return;
-    }
+    if (!lines.length) { renderCards(); return; }
 
     const headerLine = lines[0].replace(/^\uFEFF/, "");
     const headers = parseCsvLine(headerLine).map(h => h.trim().toUpperCase());
-
     const idx = name => headers.indexOf(name);
 
     const iIdPel   = idx("IDPEL");
@@ -619,7 +607,6 @@ fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanx
       const raw = lines[i].trim();
       if (!raw) continue;
       const cols = parseCsvLine(raw);
-
       const id = iIdPel >= 0 ? (cols[iIdPel] || "").trim() : "";
       if (!id) continue;
 
@@ -642,29 +629,20 @@ fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanx
     renderCards();
   });
 
-// ------------------------------
-// 4. Susun alamat
-// ------------------------------
+// 4. alamat
 function buildAlamat(d) {
   if (!d) return "";
   const parts = [];
   if (d.namapnj) parts.push(d.namapnj);
-
-  const rtRw = [
-    d.rt ? `RT ${d.rt}` : "",
-    d.rw ? `RW ${d.rw}` : ""
-  ].filter(Boolean).join(" / ");
+  const rtRw = [ d.rt ? `RT ${d.rt}` : "", d.rw ? `RW ${d.rw}` : "" ]
+               .filter(Boolean).join(" / ");
   if (rtRw) parts.push(rtRw);
-
   if (d.kel) parts.push(d.kel);
   if (d.kec) parts.push(d.kec);
-
   return parts.join(", ");
 }
 
-// ------------------------------
-// 5. Render kartu pemasangan
-// ------------------------------
+// 5. render kartu
 function renderCards() {
   const container = document.getElementById("download-list");
   container.innerHTML = "";
@@ -680,12 +658,8 @@ function renderCards() {
     card.download = "";
 
     card.dataset.search = [
-      idPel,
-      d.nama || "",
-      alamat || "",
-      d.kwh || "",
-      d.petugas || "",
-      f
+      idPel, d.nama || "", alamat || "",
+      d.kwh || "", d.petugas || "", f
     ].join(" | ");
 
     const img = document.createElement("img");
@@ -724,18 +698,14 @@ function renderCards() {
   applyFilter();
 }
 
-// ------------------------------
-// 6. Filter kartu
-// ------------------------------
+// 6. filter
 function applyFilter() {
   const term = currentSearchTerm.trim().toLowerCase();
   const cards = document.querySelectorAll(".download-card");
-
   if (!term) {
     cards.forEach(c => c.style.display = "flex");
     return;
   }
-
   cards.forEach(c => {
     const haystack = (c.dataset.search || "").toLowerCase();
     c.style.display = haystack.includes(term) ? "flex" : "none";
@@ -748,9 +718,7 @@ searchInput.addEventListener("input", e => {
   applyFilter();
 });
 
-// ------------------------------
-// 7. Viewer & back button
-// ------------------------------
+// 7. viewer & history
 const mainListContainer = document.getElementById("main-list-container");
 const bottomNav = document.getElementById("bottom-nav");
 const viewer = document.getElementById("viewer");
@@ -773,9 +741,9 @@ window.addEventListener("popstate", (event) => {
 
 function openViewer(src) {
   lastScrollY = window.scrollY;
-
   history.pushState({ page: "viewer" }, "");
 
+  isZoomed = false;
   viewerImg.classList.remove("zoom-in");
   viewerImg.src = src;
 
@@ -787,8 +755,10 @@ function openViewer(src) {
   bottomNav.classList.add("hidden");
   viewer.classList.remove("hidden");
 
+  // auto zoom-in (animasi)
   setTimeout(() => {
     viewerImg.classList.add("zoom-in");
+    isZoomed = true;
   }, 50);
 }
 
@@ -798,22 +768,27 @@ function closeViewer() {
   bottomNav.classList.remove("hidden");
   document.getElementById("wa-form").classList.add("hidden");
   viewerImg.classList.remove("zoom-in");
+  isZoomed = false;
 
   currentSearchTerm = "";
   searchInput.value = "";
   applyFilter();
   searchInput.focus();
-
   window.scrollTo(0, lastScrollY);
 }
+
+// klik gambar = toggle zoom in / out
+viewerImg.addEventListener("click", () => {
+  isZoomed = !isZoomed;
+  if (isZoomed) viewerImg.classList.add("zoom-in");
+  else viewerImg.classList.remove("zoom-in");
+});
 
 viewerBackBtn.addEventListener("click", () => {
   history.back();
 });
 
-// ------------------------------
 // 8. Form WhatsApp
-// ------------------------------
 const waFab = document.getElementById("wa-fab");
 const waForm = document.getElementById("wa-form");
 const waNamaStatic = document.getElementById("wa-nama-static");
@@ -864,7 +839,7 @@ waCloseBtn.addEventListener("click", () => {
   waForm.classList.add("hidden");
 });
 
-// kirim ke WhatsApp – WAJIB isi tegangan & nomor WA
+// kirim ke WhatsApp (tegangan + nomor WA wajib diisi)
 waSendBtn.addEventListener("click", () => {
   if (!currentSelected) {
     alert("Data pemasangan tidak tersedia.");
@@ -902,9 +877,7 @@ Lokasi Pemasangan : ${lokasi}`;
   window.open(url, "_blank");
 });
 
-// ------------------------------
 // 9. Tab switching
-// ------------------------------
 document.querySelectorAll(".nav-item").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
@@ -919,4 +892,4 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 </script>
 
 </body>
-</html>
+  </html>
