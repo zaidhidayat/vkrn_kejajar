@@ -153,37 +153,56 @@ body {
   gap: 12px;
 }
 
-/* === KARTU DENGAN GAMBAR DI ATAS & TEKS DI BAWAH === */
+/* === KARTU: GAMBAR PENUH, TEKS OUTLINE DI BAWAH === */
 .krn-card {
   flex: 1;
   border-radius: 18px;
-  display: flex;
-  flex-direction: column;      /* gambar atas, teks bawah */
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  color: white;
+  position: relative;
+  overflow: hidden;
   box-shadow: 0 4px 15px #00000030;
   border: none;
   transition: .15s;
+  cursor: pointer;
+  background: #000;
 }
 
 .krn-card img {
-  width: 60%;
-  height: auto;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.card-green  { background: #1FA855; }
-.card-orange { background: #FF8A2B; }
-.card-blue   { background: #2F5597; }
-.card-purple { background: #7030A0; }
+/* TEXT OUTLINE */
+.krn-card span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 6px 8px;
+  font-size: 17px;
+  font-weight: 800;
+  text-align: center;
+  color: #ffffff;
 
-.krn-card:active { transform: scale(.97); box-shadow: 0 2px 8px #00000022; }
+  /* OUTLINE 4 ARAH */
+  text-shadow:
+    -2px -2px 3px #000,
+     2px -2px 3px #000,
+    -2px  2px 3px #000,
+     2px  2px 3px #000;
+}
+
+/* fallback colors */
+.card-green  { background-color: #1FA855; }
+.card-orange { background-color: #FF8A2B; }
+.card-blue   { background-color: #2F5597; }
+.card-purple { background-color: #7030A0; }
+
+.krn-card:active {
+  transform: scale(.97);
+  box-shadow: 0 2px 8px #00000022;
+}
 
 /* Admin */
 .admin-form {
@@ -257,7 +276,7 @@ body {
 
 <script>
 /* ==========================================================
-   INLINE CONTENT — WITH IMAGES IN BUTTONS
+   INLINE CONTENT — GAMBAR PENUH + TEKS OUTLINE
 ========================================================== */
 
 const INLINE_AZMIL = `
@@ -428,4 +447,4 @@ innerContent.addEventListener("touchmove",e=>{
 applyZoom();
 </script>
 </body>
-      </html>
+        </html>
