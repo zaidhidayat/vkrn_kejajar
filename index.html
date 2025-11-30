@@ -98,21 +98,6 @@ body {
   box-shadow: 0 0 18px var(--glowColor);
 }
 
-/* Animations */
-.slide-from-right { animation: slideFromRight .28s ease-out; }
-.slide-from-left  { animation: slideFromLeft  .28s ease-out; }
-
-@keyframes slideFromRight { from {opacity:0; transform:translateX(40px);} to {opacity:1; transform:translateX(0);} }
-@keyframes slideFromLeft  { from {opacity:0; transform:translateX(-40px);} to {opacity:1; transform:translateX(0);} }
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  body { padding: 0 0 56px; }
-  .excel-wrapper { border-radius: 0; height: calc(100vh - 56px); }
-  .sheet-tabs-bar { height: 48px; }
-  .sheet-tab { padding: 10px 4px; font-size: 11px; }
-}
-
 /* ===========================================================
    KOTAK & KARTU KRN
 =========================================================== */
@@ -168,12 +153,10 @@ body {
 
   box-shadow: 0 4px 15px #00000040;
   transform: scale(1);
-  transition:
-    transform 0.18s ease-out,
-    box-shadow 0.18s ease-out;
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
 }
 
-/* lapisan kaca lembut di atas gambar */
+/* GLASS EFFECT */
 .krn-card::before {
   content: "";
   position: absolute;
@@ -185,54 +168,54 @@ body {
   z-index: 0;
 }
 
-/* overlay gelap bawah agar teks jelas */
+/* OVERLAY GELAP BAWAH */
 .krn-card::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 45%;
+  height: 55%;
   background: linear-gradient(to top,
-    rgba(0,0,0,0.75),
+    rgba(0,0,0,0.82),
     rgba(0,0,0,0.0)
   );
   z-index: 0;
 }
 
-/* TEKS NEON + OUTLINE DI BAWAH */
+/* TEKS NYALA NEON + OUTLINE */
 .krn-card span {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 6px;
-  padding: 4px 8px;
-  font-size: 17px;
+  bottom: 10px;
+  padding: 10px 12px;
+  font-size: 16px;
+  line-height: 1.25;
   font-weight: 800;
   text-align: center;
   color: #ffffff;
   z-index: 1;
 
-  /* glow neon turqoise + outline hitam */
   text-shadow:
-    0 0 4px  #00ffe5,
-    0 0 8px  #00ffe5,
-    0 0 14px #00ffe5,
-    -2px -2px 3px #000,
-     2px -2px 3px #000,
-    -2px  2px 3px #000,
-     2px  2px 3px #000;
+    0 0 6px  #00ffe5,
+    0 0 12px #00ffe5,
+    0 0 18px #00ffe5,
+    -2px -2px 2px #000,
+     2px -2px 2px #000,
+    -2px  2px 2px #000,
+     2px  2px 2px #000;
 }
 
-/* zoom-in ketika ditekan (dan sedikit saat hover di desktop) */
+/* ZOOM-IN ANIMASI */
 .krn-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 8px 22px #00000055;
+  transform: scale(1.04);
+  box-shadow: 0 8px 22px #00000060;
 }
 
 .krn-card:active {
-  transform: scale(1.06);
-  box-shadow: 0 10px 26px #00000066;
+  transform: scale(1.09);
+  box-shadow: 0 10px 28px #00000080;
 }
 
 /* Admin */
@@ -243,8 +226,6 @@ body {
   gap: 10px;
   margin: 0 4px 10px;
 }
-
-.admin-form label { font-size: 14px; }
 
 .admin-form input {
   padding: 8px 10px;
@@ -262,10 +243,7 @@ body {
   color: white;
   font-weight: 600;
   font-size: 16px;
-  margin-left: 4px;
-  margin-right: 4px;
 }
-.admin-btn:active { transform: scale(.97); }
 </style>
 </head>
 
@@ -307,7 +285,7 @@ body {
 
 <script>
 /* ==========================================================
-   INLINE CONTENT — BACKGROUND BUTTON IMAGE
+   INLINE CONTENT — WITH NEW TEXT
 ========================================================== */
 
 const INLINE_AZMIL = `
@@ -320,64 +298,30 @@ const INLINE_AZMIL = `
       <div class="krn-card"
         style="background-image:url('asset/pasang.webp')"
         onclick="alert('Pemasangan Bu Azmil')">
-        <span>Pemasangan</span>
+
+        <span>
+          Untuk pemasangan ganti meter,<br>
+          klik disini.<br>
+          Informasi dan form untuk laporan ada disini.
+        </span>
       </div>
 
       <div class="krn-card"
         style="background-image:url('asset/laporan.webp')"
         onclick="alert('Laporan Bu Azmil')">
-        <span>Lihat Laporan</span>
+
+        <span>
+          Klik disini untuk melihat<br>
+          progress data pemasangan.
+        </span>
       </div>
 
     </div>
   </div>
 `;
 
-const INLINE_HEXING = `
-  <div class="krn-box">
-    <div class="krn-title">KRN Hexing</div>
-    <img class="krn-img" src="asset/hd1.webp">
-
-    <div class="krn-row">
-
-      <div class="krn-card"
-        style="background-image:url('asset/pasang.webp')"
-        onclick="alert('Pemasangan Hexing')">
-        <span>Pemasangan</span>
-      </div>
-
-      <div class="krn-card"
-        style="background-image:url('asset/laporan.webp')"
-        onclick="alert('Laporan Hexing')">
-        <span>Lihat Laporan</span>
-      </div>
-
-    </div>
-  </div>
-`;
-
-const INLINE_SANXING = `
-  <div class="krn-box">
-    <div class="krn-title">KRN Sanxing</div>
-    <img class="krn-img" src="asset/hd1.webp">
-
-    <div class="krn-row">
-
-      <div class="krn-card"
-        style="background-image:url('asset/pasang.webp')"
-        onclick="alert('Pemasangan Sanxing')">
-        <span>Pemasangan</span>
-      </div>
-
-      <div class="krn-card"
-        style="background-image:url('asset/laporan.webp')"
-        onclick="alert('Laporan Sanxing')">
-        <span>Lihat Laporan</span>
-      </div>
-
-    </div>
-  </div>
-`;
+const INLINE_HEXING = INLINE_AZMIL.replaceAll("Bu Azmil","Hexing");
+const INLINE_SANXING = INLINE_AZMIL.replaceAll("Bu Azmil","Sanxing");
 
 const INLINE_ADMIN = `
   <div class="krn-box">
