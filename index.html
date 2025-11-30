@@ -153,18 +153,29 @@ body {
   gap: 12px;
 }
 
+/* === KARTU DENGAN GAMBAR DI ATAS & TEKS DI BAWAH === */
 .krn-card {
   flex: 1;
   border-radius: 18px;
   display: flex;
+  flex-direction: column;      /* gambar atas, teks bawah */
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  padding: 10px;
+  gap: 8px;
+  font-size: 18px;
   font-weight: 600;
+  text-align: center;
   color: white;
   box-shadow: 0 4px 15px #00000030;
   border: none;
   transition: .15s;
+}
+
+.krn-card img {
+  width: 60%;
+  height: auto;
+  object-fit: contain;
 }
 
 .card-green  { background: #1FA855; }
@@ -246,7 +257,7 @@ body {
 
 <script>
 /* ==========================================================
-   INLINE CONTENT — UPDATED KIRI–KANAN
+   INLINE CONTENT — WITH IMAGES IN BUTTONS
 ========================================================== */
 
 const INLINE_AZMIL = `
@@ -255,8 +266,15 @@ const INLINE_AZMIL = `
     <img class="krn-img" src="asset/hd1.webp">
 
     <div class="krn-row">
-      <div class="krn-card card-green" onclick="alert('Pemasangan Bu Azmil')">Pemasangan</div>
-      <div class="krn-card card-orange" onclick="alert('Laporan Bu Azmil')">Lihat Laporan</div>
+      <div class="krn-card card-green" onclick="alert('Pemasangan Bu Azmil')">
+        <img src="asset/pemasangan.webp">
+        <span>Pemasangan</span>
+      </div>
+
+      <div class="krn-card card-orange" onclick="alert('Laporan Bu Azmil')">
+        <img src="asset/lap.webp">
+        <span>Lihat Laporan</span>
+      </div>
     </div>
   </div>
 `;
@@ -267,8 +285,15 @@ const INLINE_HEXING = `
     <img class="krn-img" src="asset/hd1.webp">
 
     <div class="krn-row">
-      <div class="krn-card card-green" onclick="alert('Pemasangan Hexing')">Pemasangan</div>
-      <div class="krn-card card-orange" onclick="alert('Laporan Hexing')">Lihat Laporan</div>
+      <div class="krn-card card-green" onclick="alert('Pemasangan Hexing')">
+        <img src="asset/pemasangan.webp">
+        <span>Pemasangan</span>
+      </div>
+
+      <div class="krn-card card-orange" onclick="alert('Laporan Hexing')">
+        <img src="asset/lap.webp">
+        <span>Lihat Laporan</span>
+      </div>
     </div>
   </div>
 `;
@@ -279,8 +304,15 @@ const INLINE_SANXING = `
     <img class="krn-img" src="asset/hd1.webp">
 
     <div class="krn-row">
-      <div class="krn-card card-green" onclick="alert('Pemasangan Sanxing')">Pemasangan</div>
-      <div class="krn-card card-orange" onclick="alert('Laporan Sanxing')">Lihat Laporan</div>
+      <div class="krn-card card-green" onclick="alert('Pemasangan Sanxing')">
+        <img src="asset/pemasangan.webp">
+        <span>Pemasangan</span>
+      </div>
+
+      <div class="krn-card card-orange" onclick="alert('Laporan Sanxing')">
+        <img src="asset/lap.webp">
+        <span>Lihat Laporan</span>
+      </div>
     </div>
   </div>
 `;
@@ -396,4 +428,4 @@ innerContent.addEventListener("touchmove",e=>{
 applyZoom();
 </script>
 </body>
-</html>
+      </html>
