@@ -186,6 +186,12 @@
       max-width: 100%;
       border-radius: 12px;
       border: 1px solid var(--gold);
+      transform-origin: center center;
+      transition: transform 0.6s ease;
+    }
+
+    .viewer-img.zoom-in {
+      transform: scale(2);
     }
 
     /* tombol kembali di BAWAH gambar, besar & oranye */
@@ -212,7 +218,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.18);
     }
 
-    /* Hapus teks keterangan di bawah gambar (disembunyikan) */
     .viewer-caption {
       display: none;
     }
@@ -233,7 +238,7 @@
       justify-content: center;
       cursor: pointer;
       z-index: 30;
-      padding: 0;               /* padding 0px sesuai permintaan */
+      padding: 0;
     }
 
     .wa-fab img {
@@ -266,7 +271,6 @@
       text-align: center;
     }
 
-    /* ROW form: label kiri, isi kanan */
     .wa-form-row {
       margin-bottom: 10px;
       font-size: 16px;
@@ -278,9 +282,9 @@
     .wa-form-label {
       font-weight: 600;
       font-size: 16px;
-      min-width: 110px;  /* lebar tetap di kiri */
+      min-width: 110px;
       margin: 0;
-      padding-top: 4px;  /* sejajarkan dengan input */
+      padding-top: 4px;
     }
 
     .wa-form-static {
@@ -357,11 +361,8 @@
     </div>
   </header>
 
-  <!-- LIST & PENCARIAN -->
   <main class="page-container" id="main-list-container">
-    <!-- Halaman Pemasangan -->
     <section id="pemasangan" class="page active-page">
-      <!-- kotak pencarian -->
       <div class="search-bar">
         <input
           type="text"
@@ -375,32 +376,26 @@
       <div id="download-list" class="download-list"></div>
     </section>
 
-    <!-- Halaman Laporan (kosong) -->
     <section id="laporan" class="page">
       <!-- nanti diisi laporan -->
     </section>
   </main>
 
-  <!-- VIEWER GAMBAR & WHATSAPP -->
   <div id="viewer" class="viewer hidden">
     <div class="viewer-img-wrapper">
       <img id="viewer-img" class="viewer-img" src="" alt="Foto pemasangan">
     </div>
 
-    <!-- tombol kembali SEKARANG di bawah gambar -->
     <div class="viewer-back">
       <button type="button" class="viewer-back-btn" id="viewer-back-btn">⬅ Kembali ke daftar</button>
     </div>
 
-    <!-- caption disembunyikan via CSS -->
     <div class="viewer-caption" id="viewer-caption"></div>
 
-    <!-- FAB WA -->
     <button type="button" id="wa-fab" class="wa-fab">
       <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
     </button>
 
-    <!-- FORM WA -->
     <div id="wa-form" class="wa-form hidden">
       <div class="wa-form-title">Laporan Pemasangan via WhatsApp</div>
 
@@ -567,8 +562,9 @@ const idPelMap = {
 let dataSanxing = {};
 let currentSearchTerm = "";
 let currentSelected = null;
+let lastScrollY = 0;
 
-// parser CSV sederhana: hormati tanda kutip
+// parser CSV sederhana
 function parseCsvLine(line, delim = ",") {
   const result = [];
   let current = "";
@@ -578,7 +574,7 @@ function parseCsvLine(line, delim = ",") {
     const ch = line[i];
 
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { // "" -> "
+      if (inQuotes && line[i + 1] === '"') {
         current += '"';
         i++;
       } else {
@@ -647,7 +643,7 @@ fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanx
   });
 
 // ------------------------------
-// 4. Susun alamat dari beberapa kolom
+// 4. Susun alamat
 // ------------------------------
 function buildAlamat(d) {
   if (!d) return "";
@@ -683,7 +679,6 @@ function renderCards() {
     card.href = "asset/" + f;
     card.download = "";
 
-    // data untuk pencarian
     card.dataset.search = [
       idPel,
       d.nama || "",
@@ -713,7 +708,6 @@ function renderCards() {
     card.appendChild(info);
     container.appendChild(card);
 
-    // klik kartu: hapus layar (sembunyikan daftar) & tampilkan gambar penuh
     card.addEventListener("click", e => {
       e.preventDefault();
       currentSelected = {
@@ -727,12 +721,11 @@ function renderCards() {
     });
   });
 
-  // terapkan filter kalau sudah ada teks di kotak pencarian
   applyFilter();
 }
 
 // ------------------------------
-// 6. Filter kartu berdasarkan pencarian
+// 6. Filter kartu
 // ------------------------------
 function applyFilter() {
   const term = currentSearchTerm.trim().toLowerCase();
@@ -745,15 +738,10 @@ function applyFilter() {
 
   cards.forEach(c => {
     const haystack = (c.dataset.search || "").toLowerCase();
-    if (haystack.includes(term)) {
-      c.style.display = "flex";
-    } else {
-      c.style.display = "none";
-    }
+    c.style.display = haystack.includes(term) ? "flex" : "none";
   });
 }
 
-// event input untuk kotak pencarian
 const searchInput = document.getElementById("search-input");
 searchInput.addEventListener("input", e => {
   currentSearchTerm = e.target.value;
@@ -761,7 +749,7 @@ searchInput.addEventListener("input", e => {
 });
 
 // ------------------------------
-// 7. Viewer Gambar & WA
+// 7. Viewer & back button
 // ------------------------------
 const mainListContainer = document.getElementById("main-list-container");
 const bottomNav = document.getElementById("bottom-nav");
@@ -770,17 +758,13 @@ const viewerImg = document.getElementById("viewer-img");
 const viewerCaption = document.getElementById("viewer-caption");
 const viewerBackBtn = document.getElementById("viewer-back-btn");
 
-// --- HISTORY STATE UNTUK TOMBOL BACK PERANGKAT ---
-// set state awal sebagai "list" jika belum ada
 if (!history.state || !history.state.page) {
   history.replaceState({ page: "list" }, "");
 }
 
-// ketika user tekan tombol back (fisik / sistem / browser)
 window.addEventListener("popstate", (event) => {
   const state = event.state || {};
   if (state.page === "list") {
-    // dari viewer kembali ke list
     if (!viewer.classList.contains("hidden")) {
       closeViewer();
     }
@@ -788,11 +772,13 @@ window.addEventListener("popstate", (event) => {
 });
 
 function openViewer(src) {
-  // push state baru, supaya tombol back kembali ke list
+  lastScrollY = window.scrollY;
+
   history.pushState({ page: "viewer" }, "");
 
+  viewerImg.classList.remove("zoom-in");
   viewerImg.src = src;
-  // caption disembunyikan, tapi biarkan kode ini aman
+
   if (viewerCaption && currentSelected) {
     viewerCaption.textContent = `IDPEL: ${currentSelected.idPel} • ${currentSelected.nama} • ${currentSelected.alamat}`;
   }
@@ -800,6 +786,10 @@ function openViewer(src) {
   mainListContainer.classList.add("hidden");
   bottomNav.classList.add("hidden");
   viewer.classList.remove("hidden");
+
+  setTimeout(() => {
+    viewerImg.classList.add("zoom-in");
+  }, 50);
 }
 
 function closeViewer() {
@@ -807,18 +797,16 @@ function closeViewer() {
   mainListContainer.classList.remove("hidden");
   bottomNav.classList.remove("hidden");
   document.getElementById("wa-form").classList.add("hidden");
+  viewerImg.classList.remove("zoom-in");
 
-  // setelah kembali dari viewer:
-  // - bersihkan kotak pencarian
-  // - reset filter
-  // - kursor siap di kotak pencarian
   currentSearchTerm = "";
   searchInput.value = "";
   applyFilter();
   searchInput.focus();
+
+  window.scrollTo(0, lastScrollY);
 }
 
-// klik tombol kembali di dalam viewer = sama seperti tombol back sistem
 viewerBackBtn.addEventListener("click", () => {
   history.back();
 });
@@ -837,7 +825,6 @@ const lokasiInput = document.getElementById("lokasi-input");
 const waSendBtn = document.getElementById("wa-send-btn");
 const waCloseBtn = document.getElementById("wa-close-btn");
 
-// buka form saat FAB WA diklik
 waFab.addEventListener("click", () => {
   if (!currentSelected) {
     alert("Silakan pilih salah satu pemasangan terlebih dahulu.");
@@ -854,7 +841,6 @@ waFab.addEventListener("click", () => {
 
   waForm.classList.remove("hidden");
 
-  // minta lokasi perangkat
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(
       pos => {
@@ -878,7 +864,7 @@ waCloseBtn.addEventListener("click", () => {
   waForm.classList.add("hidden");
 });
 
-// kirim ke WhatsApp
+// kirim ke WhatsApp – WAJIB isi tegangan & nomor WA
 waSendBtn.addEventListener("click", () => {
   if (!currentSelected) {
     alert("Data pemasangan tidak tersedia.");
@@ -888,6 +874,18 @@ waSendBtn.addEventListener("click", () => {
   const teg = (teganganInput.value || "").trim();
   const noWa = (waNumberInput.value || "").trim();
   const lokasi = (lokasiInput.value || "").trim();
+
+  if (!teg) {
+    alert("Kolom Tegangan kwh harus diisi.");
+    teganganInput.focus();
+    return;
+  }
+
+  if (!noWa) {
+    alert("Kolom Nomor WA harus diisi.");
+    waNumberInput.focus();
+    return;
+  }
 
   const message =
 `*LAPORAN PEMASANGAN* 
@@ -921,4 +919,4 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 </script>
 
 </body>
-        </html>
+</html>
