@@ -99,7 +99,7 @@ body{
   width:100%;max-width:430px;
   display:flex;justify-content:space-around;
   background:#fff;border-top:1px solid #ddd;
-  padding:6px 0;font-size:14px;
+  padding:12px 0;font-size:16px;
 }
 .nav span{cursor:pointer;padding:6px 12px}
 .nav .aktif{color:#1d4ed8;font-weight:700}
@@ -151,7 +151,7 @@ body{
 }
 
 #laporanInfo{
-  font-size:12px;
+  font-size:16px;
   color:#4b5563;
   margin-bottom:6px;
 }
@@ -174,7 +174,7 @@ body{
 .filter-label{
   font-weight:600;
   color:#374151;
-  font-size:12px;
+  font-size:14px;
 }
 
 .filter-select{
@@ -188,7 +188,7 @@ body{
 
 /* JUMLAH DATA */
 .laporan-count{
-  font-size:12px;
+  font-size:14px;
   color:#111827;
   margin-bottom:4px;
   font-weight:600;
@@ -265,8 +265,8 @@ body{
 
 .btn-close-program{
   border:none;
-  border-radius:999px;
-  padding:4px 10px;
+  border-radius:12px;
+  padding:12px 10px;
   font-size:12px;
   cursor:pointer;
   background:#ef4444;
@@ -298,23 +298,21 @@ body{
   text-align:center;
 }
 
-/* FLOATING WHATSAPP BUTTON (MUNCUL BELAKANGAN) */
+/* FLOATING WHATSAPP BUTTON (pakai gambar PNG) */
 .wa-btn{
   position:fixed;
   right:18px;
   bottom:80px; /* di atas nav bawah */
-  width:54px;
-  height:54px;
-  border-radius:50%;
-  background:#25D366;
+  width:64px;
+  height:64px;
   display:none; /* awalnya tidak tampil */
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  color:#fff;
-  text-decoration:none;
-  box-shadow:0 4px 10px rgba(0,0,0,0.3);
   z-index:60;
+}
+.wa-btn img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
 }
 .wa-btn:active{
   transform:scale(0.94);
@@ -345,13 +343,13 @@ body{
 .wa-form-title{
   font-weight:700;
   font-size:14px;
-  margin-bottom:8px;
+  margin-bottom:30px;
   color:#111827;
 }
 
 .wa-form-field{
   margin-bottom:8px;
-  font-size:12px;
+  font-size:14px;
 }
 
 .wa-form-field label{
@@ -366,7 +364,7 @@ body{
   padding:6px 8px;
   border-radius:8px;
   border:1px solid #d1d5db;
-  font-size:13px;
+  font-size:14px;
   box-sizing:border-box;
 }
 
@@ -379,14 +377,14 @@ body{
 
 .btn-wa{
   border:none;
-  border-radius:999px;
-  padding:6px 12px;
-  font-size:12px;
+  border-radius:12px;
+  padding:15px 26px;
+  font-size:1rpx;
   cursor:pointer;
 }
 
 .btn-wa-cancel{
-  background:#e5e7eb;
+  background:yellow;
   color:#111827;
 }
 
@@ -491,8 +489,10 @@ body{
   <span id="navLap">📊 Laporan</span>
 </div>
 
-<!-- FLOATING WHATSAPP BUTTON (muncul setelah lihat program) -->
-<a href="javascript:void(0)" class="wa-btn" id="waBtn" rel="noopener">🟢</a>
+<!-- FLOATING WHATSAPP BUTTON (pakai gambar 20251202_024417.png) -->
+<a href="javascript:void(0)" class="wa-btn" id="waBtn" rel="noopener">
+  <img src="20251202_024417.png" alt="Kirim via WhatsApp">
+</a>
 
 <!-- SEARCH (PEMASANGAN SAJA) -->
 <div class="searchBar">
@@ -744,18 +744,22 @@ function lihatProgram(id){
   // tampilkan overlay program
   programView.style.display = "flex";
 
-  // tampilkan tombol WhatsApp (setelah tombol Lihat Program diklik)
+  // tampilkan tombol WhatsApp (hanya saat tampilan foto program)
   waBtn.style.display = "flex";
 }
 
 btnCloseProg.addEventListener("click",()=>{
   programView.style.display = "none";
+  // sembunyikan WA saat keluar dari tampilan foto program
+  waBtn.style.display = "none";
 });
 
 /* klik di luar kotak untuk menutup overlay */
 programView.addEventListener("click",(e)=>{
   if(e.target === programView){
     programView.style.display = "none";
+    // sembunyikan WA saat keluar dari tampilan foto program
+    waBtn.style.display = "none";
   }
 });
 
@@ -768,6 +772,8 @@ function clearScreenForWhatsApp(){
   if(pageLaporan) pageLaporan.style.display = "none";
   if(navBar) navBar.style.display = "none";
   if(searchBar) searchBar.style.display = "none";
+  // di luar tampilan foto program, WA disembunyikan
+  if(waBtn) waBtn.style.display = "none";
 }
 
 function restoreMainUI(){
@@ -775,6 +781,8 @@ function restoreMainUI(){
   if(pageLaporan) pageLaporan.style.display = "none";
   if(navBar) navBar.style.display = "flex";
   if(searchBar) searchBar.style.display = "flex";
+  // pastikan WA tetap tersembunyi di tampilan utama
+  if(waBtn) waBtn.style.display = "none";
 }
 
 /* ===========================
@@ -904,6 +912,8 @@ navHome.onclick=()=>{
   navLap.classList.remove("aktif");
   if(navBar) navBar.style.display = "flex";
   if(searchBar) searchBar.style.display="flex";
+  // pastikan WA hilang di halaman utama
+  if(waBtn) waBtn.style.display = "none";
 };
 
 navLap.onclick=()=>{
@@ -913,6 +923,8 @@ navLap.onclick=()=>{
   navHome.classList.remove("aktif");
   if(navBar) navBar.style.display = "flex";
   if(searchBar) searchBar.style.display="none";
+  // pastikan WA hilang di halaman laporan
+  if(waBtn) waBtn.style.display = "none";
 
   // baru load laporan saat pertama kali buka
   loadLaporan();
