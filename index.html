@@ -202,9 +202,9 @@
       display: none;
     }
 
-    /* FAB WHATSAPP */
+    /* FAB WHATSAPP – FIXED DI POJOK BAWAH */
     .wa-fab {
-      position: absolute;
+      position: fixed;
       right: 16px;
       bottom: 90px;
       width: 52px;
@@ -328,11 +328,11 @@
       flex-wrap:wrap;
       gap:8px 16px;
       margin-bottom:10px;
-      font-size:14px;
+      font-size:13px;
     }
     .laporan-summary-item {
       padding:6px 10px;
-      border-radius:12px;
+      border-radius:999px;
       background:#eff6ff;
       border:1px solid #bfdbfe;
       color:#0f172a;
@@ -452,7 +452,7 @@
           <select id="sort-keterangan">
             <option value="">Semua</option>
             <option value="terpasang">Sudah terpasang</option>
-            <option value="kosong">Belum terpasang</option>
+            <option value="kosong">Keterangan kosong</option>
           </select>
         </label>
         <label>
@@ -534,6 +534,39 @@
 </nav>
 
 <script>
+// =====================
+// CACHE DI BROWSER
+// =====================
+const CACHE_VERSION = 'v1';
+const CACHE_SANXING1 = 'vkrn_sanxing1_' + CACHE_VERSION;
+const CACHE_LAPORAN_SANXING = 'vkrn_laporan_sanxing_' + CACHE_VERSION;
+
+function loadWithCache(url, storageKey) {
+  return new Promise((resolve, reject) => {
+    try {
+      const cached = localStorage.getItem(storageKey);
+      if (cached) {
+        resolve(cached);
+        return;
+      }
+    } catch (e) {
+      console.warn('localStorage tidak tersedia atau error:', e);
+    }
+
+    fetch(url)
+      .then(r => r.text())
+      .then(text => {
+        try {
+          localStorage.setItem(storageKey, text);
+        } catch (e) {
+          console.warn('Gagal simpan ke localStorage:', e);
+        }
+        resolve(text);
+      })
+      .catch(reject);
+  });
+}
+
 // 1. Daftar file
 const files = [
   "akt kol sanxing hidayat-1.webp","akt kol sanxing hidayat-2.webp","akt kol sanxing hidayat-3.webp",
@@ -675,8 +708,8 @@ function parseCsvLine(line, delim = ",") {
   return result;
 }
 
-fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanxing1")
-  .then(r => r.text())
+// gunakan cache untuk sanxing1
+loadWithCache("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanxing1", CACHE_SANXING1)
   .then(text => {
     const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
     if (!lines.length) { renderCards(); return; }
@@ -876,7 +909,7 @@ if (viewerImgWrapper) {
       isZoomed = !isZoomed;
       if (isZoomed) viewerImg.classList.add("zoom-in");
       else viewerImg.classList.remove("zoom-in");
-      lastTapTime = 0; // reset
+      lastTapTime = 0;
     } else {
       lastTapTime = now;
     }
@@ -911,7 +944,6 @@ waFab.addEventListener("click", () => {
 
   waForm.classList.remove("hidden");
 
-  // SAAT FORM WHATSAPP TAMPIL, SEMBUNYIKAN GAMBAR
   if (viewerImgWrapper) viewerImgWrapper.classList.add("hidden");
 
   if ("geolocation" in navigator) {
@@ -935,7 +967,6 @@ waFab.addEventListener("click", () => {
 
 waCloseBtn.addEventListener("click", () => {
   waForm.classList.add("hidden");
-  // saat form ditutup, tampilkan lagi gambar
   if (viewerImgWrapper) viewerImgWrapper.classList.remove("hidden");
 });
 
@@ -990,8 +1021,7 @@ function loadLaporan() {
   if (laporanLoaded) return;
   laporanLoaded = true;
 
-  fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn/main/laporan/sanxing.csv")
-    .then(r => r.text())
+  loadWithCache("https://raw.githubusercontent.com/zaidhidayat/vkrn/main/laporan/sanxing.csv", CACHE_LAPORAN_SANXING)
     .then(text => {
       const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
       if (!lines.length) return;
@@ -1004,7 +1034,6 @@ function loadLaporan() {
       laporanIdxKet = idx("KETERANGAN");
       laporanIdxPet = idx("PETUGAS");
 
-      // kolom status/terpasang: coba STATUS, TERPASANG, KETERANGAN
       laporanIdxStatus = idx("STATUS");
       if (laporanIdxStatus === -1) {
         const idxTerpasang = idx("TERPASANG");
@@ -1031,8 +1060,6 @@ function loadLaporan() {
 }
 
 // SUMMARY:
-// Jumlah terpasang = jumlah sel status yang mengandung "terpasang" / "sudah"
-// Belum terpasang  = jumlah sel status yang KOSONG
 function updateLaporanSummary() {
   let terpasang = 0;
   let belum = 0;
@@ -1044,7 +1071,6 @@ function updateLaporanSummary() {
       const vRaw = (row[laporanIdxStatus] || "");
       const v = vRaw.toString().toLowerCase().trim();
       if (!v) {
-        // kosong = belum terpasang
         belum++;
       } else if (v.includes("terpasang") || v.includes("sudah")) {
         terpasang++;
@@ -1094,10 +1120,8 @@ function applyLaporanSort() {
   const sortKet = (document.getElementById("sort-keterangan")?.value || "").toLowerCase();
   const sortPet = (document.getElementById("sort-petugas")?.value || "").toLowerCase();
 
-  // Mulai dari data asli
   let working = laporanDataOriginal.map(r => r.slice());
 
-  // FILTER berdasarkan keterangan
   if (sortKet && laporanIdxStatus >= 0) {
     working = working.filter(row => {
       const vRaw = (row[laporanIdxStatus] || "");
@@ -1113,7 +1137,6 @@ function applyLaporanSort() {
     });
   }
 
-  // FILTER berdasarkan petugas: Dayat / Emi / Sarwono / Supri
   if (sortPet && laporanIdxPet >= 0) {
     working = working.filter(row => {
       const v = (row[laporanIdxPet] || "").toString().toLowerCase();
@@ -1125,7 +1148,6 @@ function applyLaporanSort() {
   renderLaporanTable();
 }
 
-// event sort/filter dropdown
 const sortKetSelect = document.getElementById("sort-keterangan");
 if (sortKetSelect) {
   sortKetSelect.addEventListener("change", () => {
@@ -1153,7 +1175,6 @@ document.querySelectorAll(".nav-item").forEach(btn => {
       targetPage.classList.add("active-page");
     }
 
-    // jika pindah ke tab laporan, baru load CSV laporan
     if (btn.dataset.target === "laporan") {
       loadLaporan();
     }
