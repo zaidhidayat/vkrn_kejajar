@@ -322,6 +322,86 @@
       white-space: nowrap;
     }
 
+    /* LAPORAN */
+    .laporan-summary {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 16px;
+      margin-bottom:10px;
+      font-size:14px;
+    }
+    .laporan-summary-item {
+      padding:6px 10px;
+      border-radius:12px;
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:#0f172a;
+    }
+    .laporan-summary-label {
+      font-weight:600;
+      color:#0369a1;
+    }
+
+    .laporan-controls {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-bottom:10px;
+      font-size:12px;
+    }
+    .laporan-controls label {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .laporan-controls select {
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid #d1d5db;
+      font-size:12px;
+      outline:none;
+    }
+
+    .laporan-table-wrapper {
+      max-height: calc(100vh - 220px);
+      overflow:auto;
+      border-radius:12px;
+      border:1px solid #e5e7eb;
+      background:#f9fafb;
+      box-shadow:0 1px 3px rgba(15,23,42,0.08);
+    }
+
+    #laporan-table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+
+    #laporan-table thead {
+      position:sticky;
+      top:0;
+      background:linear-gradient(90deg, var(--blue), var(--green));
+      color:#f9fafb;
+      z-index:1;
+    }
+
+    #laporan-table th,
+    #laporan-table td {
+      padding:6px 8px;
+      border-bottom:1px solid #e5e7eb;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    #laporan-table tbody tr:nth-child(even) {
+      background:#eff6ff;
+    }
+
+    #laporan-table tbody tr:hover {
+      background:#dbeafe;
+    }
+
     @media (max-width: 360px) {
       .header-title { font-size: 14px; }
       .download-thumb { width: 52px; height: 72px; }
@@ -355,7 +435,44 @@
     </section>
 
     <section id="laporan" class="page">
-      <!-- nanti diisi laporan -->
+      <div class="laporan-summary">
+        <div class="laporan-summary-item">
+          <span class="laporan-summary-label">Jumlah terpasang:</span>
+          <span id="sum-terpasang">0</span>
+        </div>
+        <div class="laporan-summary-item">
+          <span class="laporan-summary-label">Belum Terpasang:</span>
+          <span id="sum-belum">0</span>
+        </div>
+      </div>
+
+      <div class="laporan-controls">
+        <label>
+          Keterangan
+          <select id="sort-keterangan">
+            <option value="">Semua</option>
+            <option value="terpasang">Sudah terpasang</option>
+            <option value="kosong">Belum terpasang</option>
+          </select>
+        </label>
+        <label>
+          Petugas
+          <select id="sort-petugas">
+            <option value="">Semua</option>
+            <option value="dayat">Dayat</option>
+            <option value="emi">Emi</option>
+            <option value="sarwono">Sarwono</option>
+            <option value="supri">Supri</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="laporan-table-wrapper">
+        <table id="laporan-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
@@ -528,13 +645,13 @@ const idPelMap = {
   "akt kol sanxing hidayat-9.webp":"522052132414"
 };
 
-// 3. CSV
+// 3. CSV SANXING (pemasangan)
 let dataSanxing = {};
 let currentSearchTerm = "";
 let currentSelected = null;
 let lastScrollY = 0;
 let isZoomed = false;
-let lastTapTime = 0; // untuk deteksi ketukan ganda (double tap)
+let lastTapTime = 0; // untuk double tap
 
 function parseCsvLine(line, delim = ",") {
   const result = [];
@@ -860,7 +977,169 @@ Lokasi Pemasangan : ${lokasi}`;
   window.open(url, "_blank");
 });
 
-// 9. Tab switching
+// 9. LAPORAN: ambil CSV sanxing.csv, tampilkan tabel + summary + filter/sort
+let laporanHeaders = [];
+let laporanData = [];
+let laporanDataOriginal = [];
+let laporanIdxKet = -1;
+let laporanIdxPet = -1;
+let laporanIdxStatus = -1;
+let laporanLoaded = false;
+
+function loadLaporan() {
+  if (laporanLoaded) return;
+  laporanLoaded = true;
+
+  fetch("https://raw.githubusercontent.com/zaidhidayat/vkrn/main/laporan/sanxing.csv")
+    .then(r => r.text())
+    .then(text => {
+      const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+      if (!lines.length) return;
+
+      const headerLine = lines[0].replace(/^\uFEFF/, "");
+      laporanHeaders = parseCsvLine(headerLine).map(h => h.trim());
+      const headersUpper = laporanHeaders.map(h => h.toUpperCase());
+      const idx = name => headersUpper.indexOf(name);
+
+      laporanIdxKet = idx("KETERANGAN");
+      laporanIdxPet = idx("PETUGAS");
+
+      // kolom status/terpasang: coba STATUS, TERPASANG, KETERANGAN
+      laporanIdxStatus = idx("STATUS");
+      if (laporanIdxStatus === -1) {
+        const idxTerpasang = idx("TERPASANG");
+        laporanIdxStatus = idxTerpasang !== -1 ? idxTerpasang : laporanIdxKet;
+      }
+
+      laporanData = [];
+      for (let i = 1; i < lines.length; i++) {
+        const raw = lines[i].trim();
+        if (!raw) continue;
+        const cols = parseCsvLine(raw);
+        if (cols.every(c => !c || !c.trim())) continue;
+        laporanData.push(cols);
+      }
+
+      laporanDataOriginal = laporanData.map(row => row.slice());
+
+      updateLaporanSummary();
+      renderLaporanTable();
+    })
+    .catch(err => {
+      console.error("Gagal mengambil sanxing.csv:", err);
+    });
+}
+
+// SUMMARY:
+// Jumlah terpasang = jumlah sel status yang mengandung "terpasang" / "sudah"
+// Belum terpasang  = jumlah sel status yang KOSONG
+function updateLaporanSummary() {
+  let terpasang = 0;
+  let belum = 0;
+
+  const source = laporanDataOriginal.length ? laporanDataOriginal : laporanData;
+
+  if (laporanIdxStatus >= 0) {
+    source.forEach(row => {
+      const vRaw = (row[laporanIdxStatus] || "");
+      const v = vRaw.toString().toLowerCase().trim();
+      if (!v) {
+        // kosong = belum terpasang
+        belum++;
+      } else if (v.includes("terpasang") || v.includes("sudah")) {
+        terpasang++;
+      }
+    });
+  }
+
+  const sumTer = document.getElementById("sum-terpasang");
+  const sumBelum = document.getElementById("sum-belum");
+  if (sumTer) sumTer.textContent = terpasang;
+  if (sumBelum) sumBelum.textContent = belum;
+}
+
+function renderLaporanTable() {
+  const table = document.getElementById("laporan-table");
+  if (!table) return;
+  const thead = table.querySelector("thead");
+  const tbody = table.querySelector("tbody");
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
+
+  if (!laporanHeaders.length) return;
+
+  const trHead = document.createElement("tr");
+  laporanHeaders.forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    trHead.appendChild(th);
+  });
+  thead.appendChild(trHead);
+
+  laporanData.forEach(row => {
+    const tr = document.createElement("tr");
+    for (let i = 0; i < laporanHeaders.length; i++) {
+      const td = document.createElement("td");
+      td.textContent = row[i] || "";
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+// FILTER & SORT laporan
+function applyLaporanSort() {
+  if (!laporanDataOriginal.length) return;
+
+  const sortKet = (document.getElementById("sort-keterangan")?.value || "").toLowerCase();
+  const sortPet = (document.getElementById("sort-petugas")?.value || "").toLowerCase();
+
+  // Mulai dari data asli
+  let working = laporanDataOriginal.map(r => r.slice());
+
+  // FILTER berdasarkan keterangan
+  if (sortKet && laporanIdxStatus >= 0) {
+    working = working.filter(row => {
+      const vRaw = (row[laporanIdxStatus] || "");
+      const v = vRaw.toString().toLowerCase().trim();
+
+      if (sortKet === "terpasang") {
+        return v.includes("terpasang") || v.includes("sudah");
+      }
+      if (sortKet === "kosong") {
+        return !v;
+      }
+      return true;
+    });
+  }
+
+  // FILTER berdasarkan petugas: Dayat / Emi / Sarwono / Supri
+  if (sortPet && laporanIdxPet >= 0) {
+    working = working.filter(row => {
+      const v = (row[laporanIdxPet] || "").toString().toLowerCase();
+      return v.includes(sortPet);
+    });
+  }
+
+  laporanData = working;
+  renderLaporanTable();
+}
+
+// event sort/filter dropdown
+const sortKetSelect = document.getElementById("sort-keterangan");
+if (sortKetSelect) {
+  sortKetSelect.addEventListener("change", () => {
+    applyLaporanSort();
+  });
+}
+const sortPetSelect = document.getElementById("sort-petugas");
+if (sortPetSelect) {
+  sortPetSelect.addEventListener("change", () => {
+    applyLaporanSort();
+  });
+}
+
+// 10. Tab switching
 document.querySelectorAll(".nav-item").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
@@ -869,10 +1148,19 @@ document.querySelectorAll(".nav-item").forEach(btn => {
     document.getElementById("header-subtitle").textContent = btn.dataset.title;
 
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active-page"));
-    document.getElementById(btn.dataset.target).classList.add("active-page");
+    const targetPage = document.getElementById(btn.dataset.target);
+    if (targetPage) {
+      targetPage.classList.add("active-page");
+    }
+
+    // jika pindah ke tab laporan, baru load CSV laporan
+    if (btn.dataset.target === "laporan") {
+      loadLaporan();
+    }
   });
 });
 </script>
 
 </body>
-        </html>
+</html>
+```0
