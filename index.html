@@ -1,1186 +1,1011 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VKRN Sanxing Kejajar</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pemasangan</title>
 
-  <link rel="icon" type="image/png" href="https://iili.io/FqYzOKB.png">
+<style>
+body{
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#cdeafe,#c8f7d4);
+  margin:0;
+  font-size:14px;
+}
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* APP */
+.app{
+  max-width:430px;
+  margin:auto;
+  background:#ffffffc7;
+  min-height:100vh;
+  padding-bottom:70px;
+}
 
-    :root {
-      --blue: #0ea5e9;
-      --green: #16a34a;
-      --white: #ffffff;
-      --gold: #eab308;
-      --orange: #f97316;
-    }
+/* HEADER */
+.h{
+  background:linear-gradient(135deg,#3ba4ff,#00c48c);
+  color:#fff;
+  padding:10px 14px;
+  position:sticky;
+  top:0;
+}
 
-    body {
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(180deg, #e0f2fe, #ecfdf5);
-    }
+/* KONTEN */
+.s{padding:12px}
 
-    .app {
-      max-width: 430px;
-      margin: 0 auto;
-      background: var(--white);
-      min-height: 100vh;
-      padding-bottom: 80px;
-      border-left: 1px solid var(--gold);
-      border-right: 1px solid var(--gold);
-      position: relative;
-    }
+/* KARTU PEMASANGAN */
+.card{
+  background:rgba(255,255,255,0.9);
+  margin:10px 0;
+  padding:14px 16px;
+  border-radius:18px;
+  box-shadow:0 6px 16px rgba(15,23,42,0.12);
+}
 
-    .hidden { display: none !important; }
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+}
+.badge-id{
+  padding:3px 10px;
+  border-radius:999px;
+  font-weight:600;
+  background:#dcfce7;
+  color:#16a34a;
+}
+.id-number{font-weight:600;color:#111827}
 
-    /* HEADER */
-    .app-header {
-      display: flex;
-      align-items: center;
-      padding: 10px 16px;
-      background: linear-gradient(90deg, var(--blue), var(--green));
-      border-bottom: 1px solid var(--gold);
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      color: #ecfdf5;
-    }
+.nama-pel{font-size:18px;font-weight:700;margin:4px 0}
+.alamat-pel{font-size:13px;color:#4b5563;margin-bottom:8px}
+.lbl{font-weight:600;color:#111827}
 
-    .header-text {
-      display: flex;
-      flex-direction: column;
-    }
-    .header-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .header-subtitle {
-      font-size: 11px;
-      color:#dcfce7;
-    }
+/* meter + tombol */
+.meter-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+}
 
-    /* CONTENT */
-    .page-container {
-      padding: 16px;
-    }
-    .page { display: none; }
-    .page.active-page { display: block; }
+.meter-pill{
+  padding:6px 10px;
+  border-radius:999px;
+  background:#d1fae5;
+  color:#047857;
+  font-weight:600;
+}
 
-    /* SEARCH */
-    .search-bar {
-      margin-bottom: 50px;
-      margin-top: 40px;
-    }
+/* tombol lihat */
+.btn-lihat{
+  padding:6px 12px;
+  background:#1d4ed8;
+  color:white;
+  border-radius:10px;
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  transition:0.2s;
+}
+.btn-lihat:active{
+  transform:scale(0.96);
+}
 
-    .search-input {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 999px;
-      border: 3px solid #bfdbfe;
-      font-size: 18px;
-      outline: none;
-      box-shadow: 0 1px 1px rgba(15,23,42,0.06);
-    }
+/* NAV BAWAH */
+.nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  display:flex;justify-content:space-around;
+  background:#fff;border-top:1px solid #ddd;
+  padding:6px 0;font-size:14px;
+}
+.nav span{cursor:pointer;padding:6px 12px}
+.nav .aktif{color:#1d4ed8;font-weight:700}
 
-    .search-input:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
-    }
+/* PENCARIAN (PEMASANGAN SAJA) */
+.searchBar{
+  position:fixed;
+  top:5px;
+  right:20px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  z-index:30;
+}
 
-    /* CARD */
-    .download-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+.searchBar input{
+  width:150px;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid #5cb4d1;
+  background:white;
+  font-size:16px;
+}
 
-    .download-card {
-      display: flex;
-      align-items: center;
-      background: #f9fafb;
-      border: 1px solid var(--gold);
-      border-radius: 14px;
-      padding: 10px;
-      text-decoration: none;
-      color: #0f172a;
-      box-shadow: 0 1px 3px rgba(15,23,42,0.08);
-      min-height: 80px;
-      cursor: pointer;
-    }
+/* 🔎 Tombol cari */
+.searchBtn{
+  width:60px;height:60px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  font-size:32px;
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#30b5ff,#00d48b);
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  transition:0.2s;
+}
+.searchBtn:active{
+  transform:scale(0.92);
+}
 
-    .download-thumb {
-      width: 60px;
-      height: 80px;
-      border-radius: 6px;
-      object-fit: cover;
-      border: 1px solid var(--gold);
-      margin-right: 12px;
-      flex-shrink: 0;
-      background:#ffffff;
-    }
+/* LAPORAN BOX */
+.laporan-wrap{
+  background:rgba(255,255,255,0.9);
+  padding:12px;
+  border-radius:18px;
+  box-shadow:0 6px 16px rgba(15,23,42,0.12);
+  margin-top:8px;
+}
 
-    .info-grid {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 6px;
-      row-gap: 2px;
-      font-size: 12px;
-    }
+#laporanInfo{
+  font-size:12px;
+  color:#4b5563;
+  margin-bottom:6px;
+}
 
-    .info-label {
-      font-weight: 600;
-      color:#0369a1;
-      white-space: nowrap;
-    }
+/* FILTER 1 BARIS */
+.filter-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
 
-    .info-value {
-      color:#0f172a;
-      word-break: break-word;
-    }
+.filter-group{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
 
-    /* NAV BAWAH */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 430px;
-      background: #ffffff;
-      border-top: 1px solid var(--gold);
-      display: flex;
-      justify-content: space-around;
-      padding: px 0;
-      z-index: 20;
-    }
-    .nav-item {
-      background: transparent;
-      border: none;
-      font-size: 14px;
-      padding: 10px 18px;
-      border-radius: 12px;
-      cursor: pointer;
-    }
-    .nav-item.active {
-      background:#dcfce7;
-      border:4px solid var(--gold);
-      font-weight:600;
-    }
+.filter-label{
+  font-weight:600;
+  color:#374151;
+  font-size:12px;
+}
 
-    /* VIEWER GAMBAR */
-    .viewer {
-      padding: 12px 12px 90px;
-      display:flex;
-      flex-direction:column;
-    }
+.filter-select{
+  padding:5px 8px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  background:#f9fafb;
+  font-size:12px;
+  width:100%;
+}
 
-    .viewer-img-wrapper {
-      flex:1;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      overflow:hidden;
-    }
+/* JUMLAH DATA */
+.laporan-count{
+  font-size:12px;
+  color:#111827;
+  margin-bottom:4px;
+  font-weight:600;
+}
 
-    .viewer-img {
-      max-width:100%;
-      max-height:100%;
-      border-radius: 12px;
-      border: 1px solid var(--gold);
-      transform-origin:center center;
-      transition: transform 0.6s ease;
-    }
+/* TABEL */
+.table-container{
+  max-width:100%;
+  overflow-x:auto;
+}
 
-    .viewer-img.zoom-in {
-      transform: scale(2) translateY(-10%);
-    }
+#tLaporan{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:600px;
+}
 
-    .viewer-caption {
-      display: none;
-    }
+#tLaporan th,
+#tLaporan td{
+  padding:6px 8px;
+  border-bottom:1px solid #e5e7eb;
+  white-space:nowrap;
+}
 
-    /* FAB WHATSAPP – FIXED DI POJOK BAWAH */
-    .wa-fab {
-      position: fixed;
-      right: 16px;
-      bottom: 90px;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      border: none;
-      background: #25D366;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 30;
-      padding: 0;
-    }
+#tLaporan th{
+  background:#eff6ff;
+  font-weight:600;
+}
 
-    .wa-fab img {
-      width: 50px;
-      height: 50px;
-      display: block;
-    }
+#tLaporan tr:nth-child(even) td{
+  background:#f9fafb;
+}
 
-    /* FORM WHATSAPP */
-    .wa-form {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: calc(100% - 32px);
-      max-width: 400px;
-      padding: 18px 18px 20px;
-      background: #f9fafb;
-      border-top: 1px solid #e5e7eb;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-      z-index: 35;
-      font-size: 16px;
-    }
+/* =========================
+   PROGRAM VIEW OVERLAY
+========================= */
+.program-view{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
 
-    .wa-form-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      text-align: center;
-    }
+.program-box{
+  background:#f9fafb;
+  border-radius:18px;
+  padding:12px;
+  width:90%;
+  max-width:430px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
 
-    .wa-form-row {
-      margin-bottom: 10px;
-      font-size: 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
+.program-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
 
-    .wa-form-label {
-      font-weight: 600;
-      font-size: 16px;
-      min-width: 110px;
-      margin: 0;
-      padding-top: 4px;
-    }
+.program-title{
+  font-weight:700;
+  font-size:14px;
+  color:#111827;
+}
 
-    .wa-form-static {
-      font-size: 16px;
-      color:#0f172a;
-      flex: 1;
-    }
+.program-sub{
+  font-size:12px;
+  color:#6b7280;
+}
 
-    .wa-input {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      font-size: 16px;
-      outline: none;
-      flex: 1;
-    }
+.btn-close-program{
+  border:none;
+  border-radius:999px;
+  padding:4px 10px;
+  font-size:12px;
+  cursor:pointer;
+  background:#ef4444;
+  color:#fff;
+}
 
-    .wa-input:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 1px rgba(59,130,246,0.25);
-    }
+.program-img-wrap{
+  background:#111827;
+  border-radius:14px;
+  padding:8px;
+  max-height:70vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    .wa-input[readonly] {
-      background:#e5e7eb;
-    }
+.program-img{
+  max-width:100%;
+  max-height:65vh;
+  border-radius:10px;
+  object-fit:contain;
+  background:#000;
+}
 
-    .wa-form-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      gap: 8px;
-    }
+.program-msg{
+  margin-top:6px;
+  font-size:11px;
+  color:#e5e7eb;
+  text-align:center;
+}
 
-    .wa-btn-send {
-      flex: 1;
-      padding: 14px 12px;
-      border-radius: 12px;
-      border: none;
-      background:#22c55e;
-      color:white;
-      font-size: 16px;
-      font-weight:600;
-      cursor:pointer;
-    }
+/* FLOATING WHATSAPP BUTTON (MUNCUL BELAKANGAN) */
+.wa-btn{
+  position:fixed;
+  right:18px;
+  bottom:80px; /* di atas nav bawah */
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:#25D366;
+  display:none; /* awalnya tidak tampil */
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  color:#fff;
+  text-decoration:none;
+  box-shadow:0 4px 10px rgba(0,0,0,0.3);
+  z-index:60;
+}
+.wa-btn:active{
+  transform:scale(0.94);
+}
 
-    .wa-btn-close {
-      padding: 14px 30px;
-      border-radius: 12px;
-      border: 1px solid #d1d5db;
-      background:yellow;
-      font-size: 16px;
-      cursor:pointer;
-      white-space: nowrap;
-    }
+/* =========================
+   WA FORM OVERLAY
+========================= */
+.wa-form-view{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,0.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:70;
+}
 
-    /* LAPORAN */
-    .laporan-summary {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px 16px;
-      margin-bottom:10px;
-      font-size:13px;
-    }
-    .laporan-summary-item {
-      padding:6px 10px;
-      border-radius:999px;
-      background:#eff6ff;
-      border:1px solid #bfdbfe;
-      color:#0f172a;
-    }
-    .laporan-summary-label {
-      font-weight:600;
-      color:#0369a1;
-    }
+.wa-form-box{
+  background:#f9fafb;
+  border-radius:18px;
+  padding:14px;
+  width:90%;
+  max-width:430px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
 
-    .laporan-controls {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      margin-bottom:10px;
-      font-size:12px;
-    }
-    .laporan-controls label {
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .laporan-controls select {
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid #d1d5db;
-      font-size:12px;
-      outline:none;
-    }
+.wa-form-title{
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:8px;
+  color:#111827;
+}
 
-    .laporan-table-wrapper {
-      max-height: calc(100vh - 220px);
-      overflow:auto;
-      border-radius:12px;
-      border:1px solid #e5e7eb;
-      background:#f9fafb;
-      box-shadow:0 1px 3px rgba(15,23,42,0.08);
-    }
+.wa-form-field{
+  margin-bottom:8px;
+  font-size:12px;
+}
 
-    #laporan-table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-    }
+.wa-form-field label{
+  display:block;
+  margin-bottom:3px;
+  color:#374151;
+  font-weight:600;
+}
 
-    #laporan-table thead {
-      position:sticky;
-      top:0;
-      background:linear-gradient(90deg, var(--blue), var(--green));
-      color:#f9fafb;
-      z-index:1;
-    }
+.wa-form-field input{
+  width:100%;
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:13px;
+  box-sizing:border-box;
+}
 
-    #laporan-table th,
-    #laporan-table td {
-      padding:6px 8px;
-      border-bottom:1px solid #e5e7eb;
-      text-align:left;
-      vertical-align:top;
-    }
+.wa-form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:4px;
+}
 
-    #laporan-table tbody tr:nth-child(even) {
-      background:#eff6ff;
-    }
+.btn-wa{
+  border:none;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+  cursor:pointer;
+}
 
-    #laporan-table tbody tr:hover {
-      background:#dbeafe;
-    }
+.btn-wa-cancel{
+  background:#e5e7eb;
+  color:#111827;
+}
 
-    @media (max-width: 360px) {
-      .header-title { font-size: 14px; }
-      .download-thumb { width: 52px; height: 72px; }
-      .wa-form-label { min-width: 90px; }
-    }
-  </style>
+.btn-wa-send{
+  background:#22c55e;
+  color:#fff;
+}
+</style>
 </head>
 <body>
 
 <div class="app">
-  <header class="app-header">
-    <div class="header-text">
-      <div class="header-title">VKRN Sanxing Kejajar</div>
-      <div class="header-subtitle" id="header-subtitle">Pemasangan</div>
-    </div>
-  </header>
+  <div class="h">
+    PLN ULP Wonosobo<br><small>VKRN Kejajar</small>
+  </div>
 
-  <main class="page-container" id="main-list-container">
-    <section id="pemasangan" class="page active-page">
-      <div class="search-bar">
-        <input
-          type="text"
-          id="search-input"
-          class="search-input"
-          placeholder="Cari IDPEL / Nama / Alamat / Petugas..."
-          autocomplete="off"
-        >
-      </div>
+  <!-- PEMASANGAN -->
+  <div class="s" id="pagePemasangan">
+    <div id="cards"></div>
+  </div>
 
-      <div id="download-list" class="download-list"></div>
-    </section>
+  <!-- LAPORAN -->
+  <div class="s" id="pageLaporan" style="display:none">
+    <div class="laporan-wrap">
+      <div id="laporanInfo">Laporan akan dimuat saat menu dibuka.</div>
 
-    <section id="laporan" class="page">
-      <div class="laporan-summary">
-        <div class="laporan-summary-item">
-          <span class="laporan-summary-label">Jumlah terpasang:</span>
-          <span id="sum-terpasang">0</span>
-        </div>
-        <div class="laporan-summary-item">
-          <span class="laporan-summary-label">Belum Terpasang:</span>
-          <span id="sum-belum">0</span>
-        </div>
-      </div>
-
-      <div class="laporan-controls">
-        <label>
-          Keterangan
-          <select id="sort-keterangan">
-            <option value="">Semua</option>
-            <option value="terpasang">Sudah terpasang</option>
-            <option value="kosong">Keterangan kosong</option>
+      <!-- FILTER 1 BARIS -->
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">Status:</span>
+          <select id="selStatus" class="filter-select">
+            <option value="all">Semua</option>
+            <option value="terpasang">Terpasang</option>
+            <option value="belum">Belum Terpasang</option>
           </select>
-        </label>
-        <label>
-          Petugas
-          <select id="sort-petugas">
-            <option value="">Semua</option>
-            <option value="dayat">Dayat</option>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Petugas:</span>
+          <select id="selPetugas" class="filter-select">
+            <option value="all">Semua</option>
+            <option value="supri">Supri</option>
             <option value="emi">Emi</option>
             <option value="sarwono">Sarwono</option>
-            <option value="supri">Supri</option>
+            <option value="dayat">Dayat</option>
           </select>
-        </label>
+        </div>
       </div>
 
-      <div class="laporan-table-wrapper">
-        <table id="laporan-table">
-          <thead></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+      <div id="laporanCount" class="laporan-count">Jumlah data: 0</div>
 
-  <div id="viewer" class="viewer hidden">
-    <div class="viewer-img-wrapper">
-      <img id="viewer-img" class="viewer-img" src="" alt="Foto pemasangan">
+      <div class="table-container">
+        <table id="tLaporan"></table>
+      </div>
+
     </div>
+  </div>
 
-    <div class="viewer-caption" id="viewer-caption"></div>
-
-    <button type="button" id="wa-fab" class="wa-fab">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-    </button>
-
-    <div id="wa-form" class="wa-form hidden">
-      <div class="wa-form-title">Pas mau kirim di WA,<br> tambahi foto</div>
-      <br><br>
-
-      <div class="wa-form-row">
-        <span class="wa-form-label">Nama</span>
-        <div class="wa-form-static" id="wa-nama-static">-</div>
+  <!-- OVERLAY PROGRAM VIEW -->
+  <div class="program-view" id="programView">
+    <div class="program-box">
+      <div class="program-header">
+        <div>
+          <div class="program-title">Foto Program Pemasangan</div>
+          <div class="program-sub" id="programSub">IDPEL: -</div>
+        </div>
+        <button class="btn-close-program" id="btnCloseProgram">Kembali</button>
       </div>
-      <div class="wa-form-row">
-        <span class="wa-form-label">IDPEL</span>
-        <div class="wa-form-static" id="wa-idpel-static">-</div>
+      <div class="program-img-wrap">
+        <img id="programImg" class="program-img" src="" alt="Dokumentasi pemasangan">
       </div>
-      <div class="wa-form-row">
-        <span class="wa-form-label">Alamat</span>
-        <div class="wa-form-static" id="wa-alamat-static">-</div>
-      </div>
+      <div class="program-msg" id="programMsg"></div>
+    </div>
+  </div>
 
-      <div class="wa-form-row">
-        <label class="wa-form-label" for="tegangan-input">Tegangan kwh</label>
-        <input id="tegangan-input" class="wa-input" type="number" inputmode="decimal" placeholder="Misal: 220">
-      </div>
+  <!-- OVERLAY FORM WHATSAPP -->
+  <div class="wa-form-view" id="waFormView">
+    <div class="wa-form-box">
+      <div class="wa-form-title">Kirim Laporan via WhatsApp</div>
 
-      <div class="wa-form-row">
-        <label class="wa-form-label" for="wa-number-input">Nomor WA</label>
-        <input id="wa-number-input" class="wa-input" type="tel" inputmode="tel" placeholder="Contoh: 08123456789">
+      <div class="wa-form-field">
+        <label for="waTegangan">Tegangan kwh sanxing (Volt)</label>
+        <input id="waTegangan" type="number" inputmode="numeric" placeholder="Contoh: 220">
       </div>
 
-      <div class="wa-form-row">
-        <label class="wa-form-label" for="lokasi-input">Lokasi</label>
-        <input id="lokasi-input" class="wa-input" type="text" readonly>
+      <div class="wa-form-field">
+        <label for="waNomor">No WA Pelanggan</label>
+        <input id="waNomor" type="tel" placeholder="Contoh: 62812xxxxxxx">
       </div>
-      <br><br>
 
       <div class="wa-form-actions">
-        <button type="button" class="wa-btn-close" id="wa-close-btn">Tutup</button>
-        <button type="button" class="wa-btn-send" id="wa-send-btn">Kirim ke WhatsApp</button>
+        <button class="btn-wa btn-wa-cancel" id="btnWaBatal">Batal</button>
+        <button class="btn-wa btn-wa-send" id="btnWaKirim">Kirim WA</button>
       </div>
     </div>
   </div>
 </div>
 
-<nav class="bottom-nav" id="bottom-nav">
-  <button class="nav-item active" data-target="pemasangan" data-title="Pemasangan">🛠️ Pemasangan</button>
-  <button class="nav-item" data-target="laporan" data-title="Lihat Laporan">📄 Lihat Laporan</button>
-</nav>
+<!-- NAVIGATION -->
+<div class="nav">
+  <span id="navHome" class="aktif">🔌 Pemasangan</span>
+  <span id="navLap">📊 Laporan</span>
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON (muncul setelah lihat program) -->
+<a href="javascript:void(0)" class="wa-btn" id="waBtn" rel="noopener">🟢</a>
+
+<!-- SEARCH (PEMASANGAN SAJA) -->
+<div class="searchBar">
+  <input id="cari" placeholder="Cari...">
+  <button class="searchBtn" id="btnSearch">🔍</button>
+</div>
 
 <script>
-// =====================
-// CACHE DI BROWSER
-// =====================
-const CACHE_VERSION = 'v1';
-const CACHE_SANXING1 = 'vkrn_sanxing1_' + CACHE_VERSION;
-const CACHE_LAPORAN_SANXING = 'vkrn_laporan_sanxing_' + CACHE_VERSION;
-
-function loadWithCache(url, storageKey) {
-  return new Promise((resolve, reject) => {
-    try {
-      const cached = localStorage.getItem(storageKey);
-      if (cached) {
-        resolve(cached);
-        return;
-      }
-    } catch (e) {
-      console.warn('localStorage tidak tersedia atau error:', e);
-    }
-
-    fetch(url)
-      .then(r => r.text())
-      .then(text => {
-        try {
-          localStorage.setItem(storageKey, text);
-        } catch (e) {
-          console.warn('Gagal simpan ke localStorage:', e);
-        }
-        resolve(text);
-      })
-      .catch(reject);
-  });
-}
-
-// 1. Daftar file
-const files = [
-  "akt kol sanxing hidayat-1.webp","akt kol sanxing hidayat-2.webp","akt kol sanxing hidayat-3.webp",
-  "akt kol sanxing hidayat-4.webp","akt kol sanxing hidayat-5.webp","akt kol sanxing hidayat-6.webp",
-  "akt kol sanxing hidayat-7.webp","akt kol sanxing hidayat-8.webp","akt kol sanxing hidayat-9.webp",
-  "akt kol sanxing hidayat-10.webp","akt kol sanxing hidayat-11.webp","akt kol sanxing hidayat-12.webp",
-  "akt kol sanxing hidayat-13.webp","akt kol sanxing hidayat-14.webp","akt kol sanxing hidayat-15.webp",
-  "akt kol sanxing hidayat-16.webp","akt kol sanxing hidayat-17.webp","akt kol sanxing hidayat-18.webp",
-  "akt kol sanxing hidayat-19.webp","akt kol sanxing hidayat-20.webp","akt kol sanxing hidayat-21.webp",
-  "akt kol sanxing hidayat-22.webp","akt kol sanxing hidayat-23.webp","akt kol sanxing hidayat-24.webp",
-  "akt kol sanxing hidayat-25.webp","akt kol sanxing hidayat-26.webp","akt kol sanxing hidayat-27.webp",
-  "akt kol sanxing hidayat-28.webp","akt kol sanxing hidayat-29.webp","akt kol sanxing hidayat-30.webp",
-  "akt kol sanxing hidayat-31.webp","akt kol sanxing hidayat-32.webp","akt kol sanxing hidayat-33.webp",
-  "akt kol sanxing hidayat-34.webp","akt kol sanxing hidayat-35.webp","akt kol sanxing hidayat-36.webp",
-  "akt kol sanxing hidayat-37.webp","akt kol sanxing hidayat-38.webp","akt kol sanxing hidayat-39.webp",
-  "akt kol sanxing hidayat-40.webp","akt kol sanxing hidayat-41.webp","akt kol sanxing hidayat-42.webp",
-  "akt kol sanxing hidayat-43.webp","akt kol sanxing hidayat-44.webp","akt kol sanxing hidayat-45.webp",
-  "akt kol sanxing hidayat-46.webp","akt kol sanxing hidayat-47.webp","akt kol sanxing hidayat-48.webp",
-  "akt kol sanxing hidayat-49.webp","akt kol sanxing hidayat-50.webp","akt kol sanxing hidayat-51.webp",
-  "akt kol sanxing hidayat-52.webp","akt kol sanxing hidayat-53.webp","akt kol sanxing hidayat-54.webp",
-  "akt kol sanxing hidayat-55.webp","akt kol sanxing hidayat-56.webp","akt kol sanxing hidayat-57.webp",
-  "akt kol sanxing hidayat-58.webp","akt kol sanxing hidayat-59.webp","akt kol sanxing hidayat-60.webp",
-  "akt kol sanxing hidayat-61.webp","akt kol sanxing hidayat-62.webp","akt kol sanxing hidayat-63.webp",
-  "akt kol sanxing hidayat-64.webp","akt kol sanxing hidayat-65.webp","akt kol sanxing hidayat-66.webp",
-  "akt kol sanxing hidayat-67.webp","akt kol sanxing hidayat-68.webp","akt kol sanxing hidayat-69.webp",
-  "akt kol sanxing hidayat-70.webp","akt kol sanxing hidayat-71.webp","akt kol sanxing hidayat-72.webp",
-  "akt kol sanxing hidayat-73.webp","akt kol sanxing hidayat-74.webp","akt kol sanxing hidayat-75.webp",
-  "akt kol sanxing hidayat-76.webp","akt kol sanxing hidayat-77.webp"
-];
-
-// 2. Map IDPEL
-const idPelMap = {
-  "akt kol sanxing hidayat-10.webp":"522052132974",
-  "akt kol sanxing hidayat-11.webp":"522051779331",
-  "akt kol sanxing hidayat-1.webp":"522051782525",
-  "akt kol sanxing hidayat-14.webp":"522051746502",
-  "akt kol sanxing hidayat-13.webp":"522051767702",
-  "akt kol sanxing hidayat-12.webp":"522051344755",
-  "akt kol sanxing hidayat-15.webp":"522051782708",
-  "akt kol sanxing hidayat-17.webp":"522051797405",
-  "akt kol sanxing hidayat-16.webp":"522051816290",
-  "akt kol sanxing hidayat-19.webp":"522051820358",
-  "akt kol sanxing hidayat-2.webp":"522051812538",
-  "akt kol sanxing hidayat-18.webp":"522051772368",
-  "akt kol sanxing hidayat-22.webp":"522051904524",
-  "akt kol sanxing hidayat-20.webp":"522051819447",
-  "akt kol sanxing hidayat-21.webp":"522051775842",
-  "akt kol sanxing hidayat-23.webp":"522051031913",
-  "akt kol sanxing hidayat-25.webp":"522051791597",
-  "akt kol sanxing hidayat-24.webp":"522051776637",
-  "akt kol sanxing hidayat-26.webp":"522051791762",
-  "akt kol sanxing hidayat-27.webp":"522051900685",
-  "akt kol sanxing hidayat-28.webp":"522051776716",
-  "akt kol sanxing hidayat-30.webp":"522052133105",
-  "akt kol sanxing hidayat-3.webp":"522051807507",
-  "akt kol sanxing hidayat-29.webp":"522051909326",
-  "akt kol sanxing hidayat-33.webp":"522051802945",
-  "akt kol sanxing hidayat-32.webp":"522051781714",
-  "akt kol sanxing hidayat-31.webp":"522051772462",
-  "akt kol sanxing hidayat-35.webp":"522051903085",
-  "akt kol sanxing hidayat-36.webp":"522051801424",
-  "akt kol sanxing hidayat-34.webp":"522051901895",
-  "akt kol sanxing hidayat-37.webp":"522051779858",
-  "akt kol sanxing hidayat-39.webp":"522050829034",
-  "akt kol sanxing hidayat-38.webp":"522051821527",
-  "akt kol sanxing hidayat-41.webp":"522051808404",
-  "akt kol sanxing hidayat-4.webp":"522051772080",
-  "akt kol sanxing hidayat-40.webp":"522051770857",
-  "akt kol sanxing hidayat-42.webp":"522051781158",
-  "akt kol sanxing hidayat-44.webp":"522051809700",
-  "akt kol sanxing hidayat-43.webp":"522051784538",
-  "akt kol sanxing hidayat-47.webp":"522051904382",
-  "akt kol sanxing hidayat-46.webp":"522051815145",
-  "akt kol sanxing hidayat-45.webp":"522051823658",
-  "akt kol sanxing hidayat-5.webp":"522051797583",
-  "akt kol sanxing hidayat-49.webp":"522051863422",
-  "akt kol sanxing hidayat-48.webp":"522050868977",
-  "akt kol sanxing hidayat-50.webp":"522052132336",
-  "akt kol sanxing hidayat-52.webp":"522051777743",
-  "akt kol sanxing hidayat-51.webp":"522051785094",
-  "akt kol sanxing hidayat-55.webp":"522051805544",
-  "akt kol sanxing hidayat-54.webp":"522050805388",
-  "akt kol sanxing hidayat-53.webp":"522051788338",
-  "akt kol sanxing hidayat-58.webp":"522051795475",
-  "akt kol sanxing hidayat-57.webp":"522052133432",
-  "akt kol sanxing hidayat-56.webp":"522051784347",
-  "akt kol sanxing hidayat-6.webp":"522052132369",
-  "akt kol sanxing hidayat-60.webp":"522051800462",
-  "akt kol sanxing hidayat-59.webp":"522051831327",
-  "akt kol sanxing hidayat-62.webp":"522051202159",
-  "akt kol sanxing hidayat-63.webp":"522051829844",
-  "akt kol sanxing hidayat-61.webp":"522051775012",
-  "akt kol sanxing hidayat-65.webp":"522051794529",
-  "akt kol sanxing hidayat-66.webp":"522051775598",
-  "akt kol sanxing hidayat-64.webp":"522051905774",
-  "akt kol sanxing hidayat-68.webp":"522051568799",
-  "akt kol sanxing hidayat-67.webp":"522051903426",
-  "akt kol sanxing hidayat-69.webp":"522051796095",
-  "akt kol sanxing hidayat-70.webp":"522050273221",
-  "akt kol sanxing hidayat-71.webp":"522051785833",
-  "akt kol sanxing hidayat-7.webp":"522052132422",
-  "akt kol sanxing hidayat-74.webp":"522050283298",
-  "akt kol sanxing hidayat-72.webp":"522051802994",
-  "akt kol sanxing hidayat-73.webp":"522051778425",
-  "akt kol sanxing hidayat-77.webp":"522052132820",
-  "akt kol sanxing hidayat-75.webp":"522051903570",
-  "akt kol sanxing hidayat-76.webp":"522051775722",
-  "akt kol sanxing hidayat-8.webp":"522052132759",
-  "akt kol sanxing hidayat-9.webp":"522052132414"
+/* ===========================
+   MAP IDPEL -> FILE GAMBAR
+   folder: asset/
+=========================== */
+const imgMap = {
+ "522052132974":"akt kol sanxing hidayat-10.webp",
+ "522051779331":"akt kol sanxing hidayat-11.webp",
+ "522051782525":"akt kol sanxing hidayat-1.webp",
+ "522051746502":"akt kol sanxing hidayat-14.webp",
+ "522051767702":"akt kol sanxing hidayat-13.webp",
+ "522051344755":"akt kol sanxing hidayat-12.webp",
+ "522051782708":"akt kol sanxing hidayat-15.webp",
+ "522051797405":"akt kol sanxing hidayat-17.webp",
+ "522051816290":"akt kol sanxing hidayat-16.webp",
+ "522051820358":"akt kol sanxing hidayat-19.webp",
+ "522051812538":"akt kol sanxing hidayat-2.webp",
+ "522051772368":"akt kol sanxing hidayat-18.webp",
+ "522051904524":"akt kol sanxing hidayat-22.webp",
+ "522051819447":"akt kol sanxing hidayat-20.webp",
+ "522051775842":"akt kol sanxing hidayat-21.webp",
+ "522051031913":"akt kol sanxing hidayat-23.webp",
+ "522051791597":"akt kol sanxing hidayat-25.webp",
+ "522051776637":"akt kol sanxing hidayat-24.webp",
+ "522051791762":"akt kol sanxing hidayat-26.webp",
+ "522051900685":"akt kol sanxing hidayat-27.webp",
+ "522051776716":"akt kol sanxing hidayat-28.webp",
+ "522052133105":"akt kol sanxing hidayat-30.webp",
+ "522051807507":"akt kol sanxing hidayat-3.webp",
+ "522051909326":"akt kol sanxing hidayat-29.webp",
+ "522051802945":"akt kol sanxing hidayat-33.webp",
+ "522051781714":"akt kol sanxing hidayat-32.webp",
+ "522051772462":"akt kol sanxing hidayat-31.webp",
+ "522051903085":"akt kol sanxing hidayat-35.webp",
+ "522051801424":"akt kol sanxing hidayat-36.webp",
+ "522051901895":"akt kol sanxing hidayat-34.webp",
+ "522051779858":"akt kol sanxing hidayat-37.webp",
+ "522050829034":"akt kol sanxing hidayat-39.webp",
+ "522051821527":"akt kol sanxing hidayat-38.webp",
+ "522051808404":"akt kol sanxing hidayat-41.webp",
+ "522051772080":"akt kol sanxing hidayat-4.webp",
+ "522051770857":"akt kol sanxing hidayat-40.webp",
+ "522051781158":"akt kol sanxing hidayat-42.webp",
+ "522051809700":"akt kol sanxing hidayat-44.webp",
+ "522051784538":"akt kol sanxing hidayat-43.webp",
+ "522051904382":"akt kol sanxing hidayat-47.webp",
+ "522051815145":"akt kol sanxing hidayat-46.webp",
+ "522051823658":"akt kol sanxing hidayat-45.webp",
+ "522051797583":"akt kol sanxing hidayat-5.webp",
+ "522051863422":"akt kol sanxing hidayat-49.webp",
+ "522050868977":"akt kol sanxing hidayat-48.webp",
+ "522052132336":"akt kol sanxing hidayat-50.webp",
+ "522051777743":"akt kol sanxing hidayat-52.webp",
+ "522051785094":"akt kol sanxing hidayat-51.webp",
+ "522051805544":"akt kol sanxing hidayat-55.webp",
+ "522050805388":"akt kol sanxing hidayat-54.webp",
+ "522051788338":"akt kol sanxing hidayat-53.webp",
+ "522051795475":"akt kol sanxing hidayat-58.webp",
+ "522052133432":"akt kol sanxing hidayat-57.webp",
+ "522051784347":"akt kol sanxing hidayat-56.webp",
+ "522052132369":"akt kol sanxing hidayat-6.webp",
+ "522051800462":"akt kol sanxing hidayat-60.webp",
+ "522051831327":"akt kol sanxing hidayat-59.webp",
+ "522051202159":"akt kol sanxing hidayat-62.webp",
+ "522051829844":"akt kol sanxing hidayat-63.webp",
+ "522051775012":"akt kol sanxing hidayat-61.webp",
+ "522051794529":"akt kol sanxing hidayat-65.webp",
+ "522051775598":"akt kol sanxing hidayat-66.webp",
+ "522051905774":"akt kol sanxing hidayat-64.webp",
+ "522051568799":"akt kol sanxing hidayat-68.webp",
+ "522051903426":"akt kol sanxing hidayat-67.webp",
+ "522051796095":"akt kol sanxing hidayat-69.webp",
+ "522050273221":"akt kol sanxing hidayat-70.webp",
+ "522051785833":"akt kol sanxing hidayat-71.webp",
+ "522052132422":"akt kol sanxing hidayat-7.webp",
+ "522050283298":"akt kol sanxing hidayat-74.webp",
+ "522051802994":"akt kol sanxing hidayat-72.webp",
+ "522051778425":"akt kol sanxing hidayat-73.webp",
+ "522052132820":"akt kol sanxing hidayat-77.webp",
+ "522051903570":"akt kol sanxing hidayat-75.webp",
+ "522051775722":"akt kol sanxing hidayat-76.webp",
+ "522052132759":"akt kol sanxing hidayat-8.webp",
+ "522052132414":"akt kol sanxing hidayat-9.webp"
 };
 
-// 3. CSV SANXING (pemasangan)
-let dataSanxing = {};
-let currentSearchTerm = "";
-let currentSelected = null;
-let lastScrollY = 0;
-let isZoomed = false;
-let lastTapTime = 0; // untuk double tap
+/* ===========================
+   GLOBAL STATE
+=========================== */
+let data=[];                 // data pemasangan
+let currentPel = null;       // pelanggan aktif
 
-function parseCsvLine(line, delim = ",") {
-  const result = [];
-  let current = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"'; i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (ch === delim && !inQuotes) {
-      result.push(current); current = "";
-    } else {
-      current += ch;
-    }
+let laporanHeaders=[];
+let laporanRows=[];
+let laporanIdxKet=-1;
+let laporanIdxPet=-1;
+let laporanStatusFilter="all";
+let laporanPetugasFilter="all";
+let laporanLoaded=false;     // <- supaya load laporan hanya sekali
+
+/* DOM refs umum */
+const programView   = document.getElementById("programView");
+const programImg    = document.getElementById("programImg");
+const programSub    = document.getElementById("programSub");
+const programMsg    = document.getElementById("programMsg");
+const btnCloseProg  = document.getElementById("btnCloseProgram");
+const waBtn         = document.getElementById("waBtn");
+const waFormView    = document.getElementById("waFormView");
+const waTegangan    = document.getElementById("waTegangan");
+const waNomor       = document.getElementById("waNomor");
+const btnWaBatal    = document.getElementById("btnWaBatal");
+const btnWaKirim    = document.getElementById("btnWaKirim");
+const navBar        = document.querySelector(".nav");
+const searchBar     = document.querySelector(".searchBar");
+const pagePemasangan=document.getElementById("pagePemasangan");
+const pageLaporan   =document.getElementById("pageLaporan");
+const laporanInfo   =document.getElementById("laporanInfo");
+
+/* ===========================
+   CSV PARSER
+=========================== */
+function parseCSVLine(l){
+  let a=[],c="",q=false;
+  for(let ch of l){
+    if(ch === '"'){ q=!q; continue; }
+    if(ch === "," && !q){ a.push(c); c=""; }
+    else c += ch;
   }
-  result.push(current);
-  return result;
+  a.push(c);
+  return a.map(x=>x.trim());
 }
 
-// gunakan cache untuk sanxing1
-loadWithCache("https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanxing1", CACHE_SANXING1)
-  .then(text => {
-    const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-    if (!lines.length) { renderCards(); return; }
+/* ===========================
+   LOAD DATA PEMASANGAN
+=========================== */
+async function loadData(){
+  const url="https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanxing1";
+  try{
+    const txt=await fetch(url).then(r=>r.text());
+    const lines=txt.split(/\r?\n/).filter(x=>x.trim());
+    const head=parseCSVLine(lines[0]).map(h=>h.toUpperCase());
+    const gi=x=>head.indexOf(x)>=0 ? head.indexOf(x) : -1;
 
-    const headerLine = lines[0].replace(/^\uFEFF/, "");
-    const headers = parseCsvLine(headerLine).map(h => h.trim().toUpperCase());
-    const idx = name => headers.indexOf(name);
+    const idxID=gi("IDPEL"),
+          idxN =gi("NAMA"),
+          idxP =gi("NAMAPNJ"),
+          idxRT=gi("RT"),
+          idxRW=gi("RW"),
+          idxKEL=gi("NAMA_KELURAHAN"),
+          idxKEC=gi("NAMA_KECAMATAN"),
+          idxM =gi("NOMOR_METER_KWH");
 
-    const iIdPel   = idx("IDPEL");
-    const iNama    = idx("NAMA");
-    const iNamaPnj = idx("NAMAPNJ");
-    const iRt      = idx("RT");
-    const iRw      = idx("RW");
-    const iKel     = idx("NAMA_KELURAHAN");
-    const iKec     = idx("NAMA_KECAMATAN");
-    const iKwh     = idx("NOMOR_METER_KWH");
-    const iPetugas = idx("PETUGAS");
+    data=[];
 
-    for (let i = 1; i < lines.length; i++) {
-      const raw = lines[i].trim();
-      if (!raw) continue;
-      const cols = parseCsvLine(raw);
-      const id = iIdPel >= 0 ? (cols[iIdPel] || "").trim() : "";
-      if (!id) continue;
+    for(let i=1;i<lines.length;i++){
+      const c=parseCSVLine(lines[i]);
+      if(!c[idxID]) continue;
 
-      dataSanxing[id] = {
-        nama:    iNama    >= 0 ? (cols[iNama]    || "").trim() : "",
-        namapnj: iNamaPnj >= 0 ? (cols[iNamaPnj] || "").trim() : "",
-        rt:      iRt      >= 0 ? (cols[iRt]      || "").trim() : "",
-        rw:      iRw      >= 0 ? (cols[iRw]      || "").trim() : "",
-        kel:     iKel     >= 0 ? (cols[iKel]     || "").trim() : "",
-        kec:     iKec     >= 0 ? (cols[iKec]     || "").trim() : "",
-        kwh:     iKwh     >= 0 ? (cols[iKwh]     || "").trim() : "",
-        petugas: iPetugas >= 0 ? (cols[iPetugas] || "").trim() : ""
-      };
+      const alamat=[
+        c[idxP]||"",
+        c[idxRT] ? "RT "+c[idxRT] : "",
+        c[idxRW] ? "RW "+c[idxRW] : "",
+        c[idxKEL]||"",
+        c[idxKEC]||""
+      ].filter(Boolean).join(", ");
+
+      data.push({
+        id:c[idxID],
+        nama:c[idxN]||"",
+        alamat,
+        meter:c[idxM]||""
+      });
     }
 
-    renderCards();
-  })
-  .catch(err => {
-    console.error("Gagal mengambil sanxing1:", err);
-    renderCards();
+    tampil();
+  }catch(e){
+    // kalau offline dan fetch gagal, kartu tidak akan muncul tapi HTML tetap terbuka
+    console.error("Gagal memuat data pemasangan", e);
+  }
+}
+
+/* ===========================
+   CARD RENDER PEMASANGAN
+=========================== */
+function tampil(filter=""){
+  const box=document.getElementById("cards");
+  const input=document.getElementById("cari");
+
+  filter=filter.toLowerCase();
+  box.innerHTML="";
+  let count=0;
+
+  data.forEach(x=>{
+    const t=(x.id+" "+x.nama+" "+x.alamat+" "+x.meter).toLowerCase();
+    if(filter && !t.includes(filter)) return;
+    count++;
+
+    box.innerHTML += `
+      <div class="card">
+        <div class="card-top">
+          <span class="badge-id">ID PEL</span>
+          <span class="id-number">${x.id}</span>
+        </div>
+
+        <div class="nama-pel">${x.nama}</div>
+        <div class="alamat-pel"><span class="lbl">Alamat:</span> ${x.alamat}</div>
+
+        <div class="meter-wrap">
+          <div class="meter-pill">No Sanxing: ${x.meter}</div>
+          <button class="btn-lihat" onclick="lihatProgram('${x.id}')">Lihat Program</button>
+        </div>
+      </div>`;
   });
 
-// 4. alamat
-function buildAlamat(d) {
-  if (!d) return "";
-  const parts = [];
-  if (d.namapnj) parts.push(d.namapnj);
-  const rtRw = [ d.rt ? `RT ${d.rt}` : "", d.rw ? `RW ${d.rw}` : "" ]
-               .filter(Boolean).join(" / ");
-  if (rtRw) parts.push(rtRw);
-  if (d.kel) parts.push(d.kel);
-  if (d.kec) parts.push(d.kec);
-  return parts.join(", ");
-}
-
-// 5. render kartu
-function renderCards() {
-  const container = document.getElementById("download-list");
-  container.innerHTML = "";
-
-  files.forEach(f => {
-    const idPel = idPelMap[f] || "";
-    const d = idPel ? (dataSanxing[idPel] || {}) : {};
-    const alamat = buildAlamat(d);
-
-    const card = document.createElement("a");
-    card.className = "download-card";
-    card.href = "asset/" + f;
-    card.download = "";
-
-    card.dataset.search = [
-      idPel, d.nama || "", alamat || "",
-      d.kwh || "", d.petugas || "", f
-    ].join(" | ");
-
-    const img = document.createElement("img");
-    img.className = "download-thumb";
-    img.src = "asset/" + f;
-    img.alt = f;
-
-    const info = document.createElement("div");
-    info.innerHTML = `
-      <div class="info-grid">
-        <div class="info-label">Id Pel</div><div class="info-value">${idPel || "-"}</div>
-        <div class="info-label">Nama</div><div class="info-value">${d.nama || "-"}</div>
-        <div class="info-label">Alamat</div><div class="info-value">${alamat || "-"}</div>
-        <div class="info-label">No KWH Sanxing</div><div class="info-value">${d.kwh || "-"}</div>
-        <div class="info-label">Petugas</div><div class="info-value">${d.petugas || "-"}</div>
-      </div>
-    `;
-
-    card.appendChild(img);
-    card.appendChild(info);
-    container.appendChild(card);
-
-    card.addEventListener("click", e => {
-      e.preventDefault();
-      currentSelected = {
-        idPel: idPel || "-",
-        nama: d.nama || "-",
-        alamat: alamat || "-",
-        petugas: d.petugas || "-",
-        kwh: d.kwh || "-"
-      };
-      openViewer("asset/" + f);
-    });
-  });
-
-  applyFilter();
-}
-
-// 6. filter
-function applyFilter() {
-  const term = currentSearchTerm.trim().toLowerCase();
-  const cards = document.querySelectorAll(".download-card");
-  if (!term) {
-    cards.forEach(c => c.style.display = "flex");
-    return;
-  }
-  cards.forEach(c => {
-    const haystack = (c.dataset.search || "").toLowerCase();
-    c.style.display = haystack.includes(term) ? "flex" : "none";
-  });
-}
-
-const searchInput = document.getElementById("search-input");
-searchInput.addEventListener("input", e => {
-  currentSearchTerm = e.target.value;
-  applyFilter();
-});
-
-// 7. viewer & history
-const mainListContainer = document.getElementById("main-list-container");
-const bottomNav = document.getElementById("bottom-nav");
-const viewer = document.getElementById("viewer");
-const viewerImg = document.getElementById("viewer-img");
-const viewerCaption = document.getElementById("viewer-caption");
-const viewerImgWrapper = document.querySelector(".viewer-img-wrapper");
-
-if (!history.state || !history.state.page) {
-  history.replaceState({ page: "list" }, "");
-}
-
-window.addEventListener("popstate", (event) => {
-  const state = event.state || {};
-  if (state.page === "list") {
-    if (!viewer.classList.contains("hidden")) {
-      closeViewer();
-    }
-  }
-});
-
-function openViewer(src) {
-  lastScrollY = window.scrollY;
-  history.pushState({ page: "viewer" }, "");
-
-  // reset zoom
-  isZoomed = false;
-  viewerImg.classList.remove("zoom-in");
-  viewerImg.src = src;
-
-  if (viewerCaption && currentSelected) {
-    viewerCaption.textContent = `IDPEL: ${currentSelected.idPel} • ${currentSelected.nama} • ${currentSelected.alamat}`;
-  }
-
-  mainListContainer.classList.add("hidden");
-  bottomNav.classList.add("hidden");
-  viewer.classList.remove("hidden");
-
-  if (viewerImgWrapper) viewerImgWrapper.classList.remove("hidden");
-}
-
-function closeViewer() {
-  viewer.classList.add("hidden");
-  mainListContainer.classList.remove("hidden");
-  bottomNav.classList.remove("hidden");
-  document.getElementById("wa-form").classList.add("hidden");
-  viewerImg.classList.remove("zoom-in");
-  isZoomed = false;
-
-  if (viewerImgWrapper) viewerImgWrapper.classList.remove("hidden");
-
-  currentSearchTerm = "";
-  searchInput.value = "";
-  applyFilter();
-  searchInput.focus();
-  window.scrollTo(0, lastScrollY);
-}
-
-// DOUBLE TAP pada area gambar = toggle zoom in / out
-if (viewerImgWrapper) {
-  viewerImgWrapper.addEventListener("click", () => {
-    const now = Date.now();
-    if (now - lastTapTime < 300) { // 300 ms dianggap double tap
-      isZoomed = !isZoomed;
-      if (isZoomed) viewerImg.classList.add("zoom-in");
-      else viewerImg.classList.remove("zoom-in");
-      lastTapTime = 0;
-    } else {
-      lastTapTime = now;
-    }
-  });
-}
-
-// 8. Form WhatsApp
-const waFab = document.getElementById("wa-fab");
-const waForm = document.getElementById("wa-form");
-const waNamaStatic = document.getElementById("wa-nama-static");
-const waIdpelStatic = document.getElementById("wa-idpel-static");
-const waAlamatStatic = document.getElementById("wa-alamat-static");
-const teganganInput = document.getElementById("tegangan-input");
-const waNumberInput = document.getElementById("wa-number-input");
-const lokasiInput = document.getElementById("lokasi-input");
-const waSendBtn = document.getElementById("wa-send-btn");
-const waCloseBtn = document.getElementById("wa-close-btn");
-
-waFab.addEventListener("click", () => {
-  if (!currentSelected) {
-    alert("Silakan pilih salah satu pemasangan terlebih dahulu.");
-    return;
-  }
-
-  waNamaStatic.textContent = currentSelected.nama;
-  waIdpelStatic.textContent = currentSelected.idPel;
-  waAlamatStatic.textContent = currentSelected.alamat;
-
-  teganganInput.value = "";
-  waNumberInput.value = "";
-  lokasiInput.value = "Mengambil lokasi perangkat...";
-
-  waForm.classList.remove("hidden");
-
-  if (viewerImgWrapper) viewerImgWrapper.classList.add("hidden");
-
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        const link = `https://maps.google.com/?q=${lat},${lon}`;
-        lokasiInput.value = link;
-      },
-      err => {
-        console.error("Gagal mendapatkan lokasi:", err);
-        lokasiInput.value = "Lokasi tidak dapat diambil";
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+  if(filter && count === 1){
+    input.style.display="none";
   } else {
-    lokasiInput.value = "Perangkat tidak mendukung geolokasi";
+    input.style.display="block";
+  }
+}
+
+/* ===========================
+   PROGRAM VIEW HANDLER
+=========================== */
+function lihatProgram(id){
+  // simpan pelanggan aktif
+  currentPel = data.find(d => d.id === id) || {id, nama:"", alamat:"", meter:""};
+
+  const file = imgMap[id];
+  programSub.textContent = "IDPEL: " + id;
+
+  if(file){
+    programImg.style.display = "block";
+    programImg.src = "asset/" + file;
+    programImg.alt = "Dokumentasi pemasangan " + id;
+    programMsg.textContent = "Gambar diambil dari asset: " + file;
+  }else{
+    programImg.style.display = "none";
+    programImg.src = "";
+    programMsg.textContent = "Gambar untuk IDPEL ini belum tersedia di folder asset.";
+  }
+
+  // tampilkan overlay program
+  programView.style.display = "flex";
+
+  // tampilkan tombol WhatsApp (setelah tombol Lihat Program diklik)
+  waBtn.style.display = "flex";
+}
+
+btnCloseProg.addEventListener("click",()=>{
+  programView.style.display = "none";
+});
+
+/* klik di luar kotak untuk menutup overlay */
+programView.addEventListener("click",(e)=>{
+  if(e.target === programView){
+    programView.style.display = "none";
   }
 });
 
-waCloseBtn.addEventListener("click", () => {
-  waForm.classList.add("hidden");
-  if (viewerImgWrapper) viewerImgWrapper.classList.remove("hidden");
+/* ===========================
+   BERSIHKAN & RESTORE LAYAR
+=========================== */
+function clearScreenForWhatsApp(){
+  if(programView) programView.style.display = "none";
+  if(pagePemasangan) pagePemasangan.style.display = "none";
+  if(pageLaporan) pageLaporan.style.display = "none";
+  if(navBar) navBar.style.display = "none";
+  if(searchBar) searchBar.style.display = "none";
+}
+
+function restoreMainUI(){
+  if(pagePemasangan) pagePemasangan.style.display = "block";
+  if(pageLaporan) pageLaporan.style.display = "none";
+  if(navBar) navBar.style.display = "flex";
+  if(searchBar) searchBar.style.display = "flex";
+}
+
+/* ===========================
+   PENCARIAN PEMASANGAN
+=========================== */
+const inputCari=document.getElementById("cari");
+const btnSearch=document.getElementById("btnSearch");
+
+inputCari.addEventListener("input",()=>tampil(inputCari.value));
+
+btnSearch.addEventListener("click",()=>{
+  if(inputCari.style.display==="none"){
+    inputCari.value="";
+    inputCari.style.display="block";
+    tampil("");
+    inputCari.focus();
+  }else if(inputCari.value){
+    inputCari.value="";
+    tampil("");
+    inputCari.focus();
+  }else{
+    inputCari.focus();
+  }
 });
 
-// kirim ke WhatsApp (tegangan + nomor WA wajib diisi)
-waSendBtn.addEventListener("click", () => {
-  if (!currentSelected) {
-    alert("Data pemasangan tidak tersedia.");
-    return;
+/* ===========================
+   LOAD LAPORAN (lazy load)
+=========================== */
+async function loadLaporan(){
+  if(laporanLoaded) return; // sudah pernah dimuat
+
+  const url="https://raw.githubusercontent.com/zaidhidayat/vkrn/main/laporan/sanxing.csv";
+  try{
+    laporanInfo.textContent="Memuat laporan pemasangan...";
+
+    const txt=await fetch(url).then(r=>r.text());
+    const lines=txt.split(/\r?\n/).filter(x=>x.trim());
+    laporanHeaders=parseCSVLine(lines[0]);
+    laporanRows=[];
+
+    for(let i=1;i<lines.length;i++){
+      const cols=parseCSVLine(lines[i]);
+      if(cols.every(v => !v || !v.trim())) continue;
+      laporanRows.push(cols);
+    }
+
+    const hUpper=laporanHeaders.map(h=>h.toUpperCase());
+    laporanIdxKet = hUpper.indexOf("KETERANGAN");
+    laporanIdxPet = hUpper.indexOf("PETUGAS");
+
+    laporanLoaded = true;
+    renderLaporanTable();
+    laporanInfo.textContent="Laporan pemasangan Sanxing.";
+  }catch(e){
+    laporanInfo.textContent="Gagal memuat data laporan (mungkin offline).";
+    console.error("Gagal memuat laporan", e);
   }
+}
 
-  const teg = (teganganInput.value || "").trim();
-  const noWa = (waNumberInput.value || "").trim();
-  const lokasi = (lokasiInput.value || "").trim();
+/* ===========================
+   RENDER TABLE + FILTER
+=========================== */
+function renderLaporanTable(){
+  const tbl=document.getElementById("tLaporan");
+  const countEl=document.getElementById("laporanCount");
 
-  if (!teg) {
-    alert("Kolom Tegangan kwh harus diisi.");
-    teganganInput.focus();
-    return;
-  }
+  let html="<thead><tr>";
+  laporanHeaders.forEach(h=> html+=`<th>${h}</th>`);
+  html+="</tr></thead><tbody>";
 
-  if (!noWa) {
-    alert("Kolom Nomor WA harus diisi.");
-    waNumberInput.focus();
-    return;
-  }
+  let count=0;
 
-  const message =
-`*LAPORAN PEMASANGAN* 
-*VKRN KWH SANXING*
+  laporanRows.forEach(cols=>{
+    // STATUS FILTER
+    if(laporanIdxKet >= 0){
+      const ket=(cols[laporanIdxKet]||"").toLowerCase();
 
-Nama : ${currentSelected.nama}
-IDPEL : ${currentSelected.idPel}
-Alamat : ${currentSelected.alamat}
-Tegangan kwh sanxing : ${teg} V
-Nomor WA : ${noWa}
-Lokasi Pemasangan : ${lokasi}`;
+      if(laporanStatusFilter==="terpasang" && !ket.includes("terpasang")) return;
+      if(laporanStatusFilter==="belum" && ket.trim()!=="") return;
+    }
 
-  const url = "https://wa.me/?text=" + encodeURIComponent(message);
+    // PETUGAS FILTER
+    if(laporanIdxPet >= 0 && laporanPetugasFilter!=="all"){
+      const pet=(cols[laporanIdxPet]||"").toLowerCase();
+      if(!pet.includes(laporanPetugasFilter)) return;
+    }
+
+    count++;
+
+    html+="<tr>";
+    laporanHeaders.forEach((_,i)=> html+=`<td>${cols[i]||""}</td>`);
+    html+="</tr>";
+  });
+
+  html+="</tbody>";
+  tbl.innerHTML=html;
+
+  countEl.textContent=`Jumlah data: ${count}`;
+}
+
+/* ===========================
+   FILTER EVENTS
+=========================== */
+const selStatus=document.getElementById("selStatus");
+const selPetugas=document.getElementById("selPetugas");
+
+selStatus.onchange=()=>{
+  laporanStatusFilter=selStatus.value;
+  if(laporanLoaded) renderLaporanTable();
+};
+
+selPetugas.onchange=()=>{
+  laporanPetugasFilter=selPetugas.value;
+  if(laporanLoaded) renderLaporanTable();
+};
+
+/* ===========================
+   NAVIGATION
+=========================== */
+const navHome=document.getElementById("navHome");
+const navLap=document.getElementById("navLap");
+
+navHome.onclick=()=>{
+  pagePemasangan.style.display="block";
+  pageLaporan.style.display="none";
+  navHome.classList.add("aktif");
+  navLap.classList.remove("aktif");
+  if(navBar) navBar.style.display = "flex";
+  if(searchBar) searchBar.style.display="flex";
+};
+
+navLap.onclick=()=>{
+  pagePemasangan.style.display="none";
+  pageLaporan.style.display="block";
+  navLap.classList.add("aktif");
+  navHome.classList.remove("aktif");
+  if(navBar) navBar.style.display = "flex";
+  if(searchBar) searchBar.style.display="none";
+
+  // baru load laporan saat pertama kali buka
+  loadLaporan();
+};
+
+/* ===========================
+   WHATSAPP FLOW
+=========================== */
+
+function openWhatsAppWithText(text){
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  // dianggap sudah mengirim pesan -> sembunyikan tombol WA & form
+  waBtn.style.display = "none";
+  waFormView.style.display = "none";
   window.open(url, "_blank");
+}
+
+waBtn.addEventListener("click",(e)=>{
+  e.preventDefault();
+  if(!currentPel){
+    alert("Pilih pelanggan terlebih dahulu melalui tombol 'Lihat Program'.");
+    return;
+  }
+  // bersihkan layar lalu tampilkan form WA
+  clearScreenForWhatsApp();
+  waFormView.style.display = "flex";
 });
 
-// 9. LAPORAN: ambil CSV sanxing.csv, tampilkan tabel + summary + filter/sort
-let laporanHeaders = [];
-let laporanData = [];
-let laporanDataOriginal = [];
-let laporanIdxKet = -1;
-let laporanIdxPet = -1;
-let laporanIdxStatus = -1;
-let laporanLoaded = false;
+btnWaBatal.addEventListener("click",()=>{
+  waFormView.style.display = "none";
+  restoreMainUI();
+});
 
-function loadLaporan() {
-  if (laporanLoaded) return;
-  laporanLoaded = true;
-
-  loadWithCache("https://raw.githubusercontent.com/zaidhidayat/vkrn/main/laporan/sanxing.csv", CACHE_LAPORAN_SANXING)
-    .then(text => {
-      const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-      if (!lines.length) return;
-
-      const headerLine = lines[0].replace(/^\uFEFF/, "");
-      laporanHeaders = parseCsvLine(headerLine).map(h => h.trim());
-      const headersUpper = laporanHeaders.map(h => h.toUpperCase());
-      const idx = name => headersUpper.indexOf(name);
-
-      laporanIdxKet = idx("KETERANGAN");
-      laporanIdxPet = idx("PETUGAS");
-
-      laporanIdxStatus = idx("STATUS");
-      if (laporanIdxStatus === -1) {
-        const idxTerpasang = idx("TERPASANG");
-        laporanIdxStatus = idxTerpasang !== -1 ? idxTerpasang : laporanIdxKet;
-      }
-
-      laporanData = [];
-      for (let i = 1; i < lines.length; i++) {
-        const raw = lines[i].trim();
-        if (!raw) continue;
-        const cols = parseCsvLine(raw);
-        if (cols.every(c => !c || !c.trim())) continue;
-        laporanData.push(cols);
-      }
-
-      laporanDataOriginal = laporanData.map(row => row.slice());
-
-      updateLaporanSummary();
-      renderLaporanTable();
-    })
-    .catch(err => {
-      console.error("Gagal mengambil sanxing.csv:", err);
-    });
-}
-
-// SUMMARY:
-function updateLaporanSummary() {
-  let terpasang = 0;
-  let belum = 0;
-
-  const source = laporanDataOriginal.length ? laporanDataOriginal : laporanData;
-
-  if (laporanIdxStatus >= 0) {
-    source.forEach(row => {
-      const vRaw = (row[laporanIdxStatus] || "");
-      const v = vRaw.toString().toLowerCase().trim();
-      if (!v) {
-        belum++;
-      } else if (v.includes("terpasang") || v.includes("sudah")) {
-        terpasang++;
-      }
-    });
+btnWaKirim.addEventListener("click",()=>{
+  if(!currentPel){
+    alert("Data pelanggan tidak ditemukan.");
+    return;
   }
 
-  const sumTer = document.getElementById("sum-terpasang");
-  const sumBelum = document.getElementById("sum-belum");
-  if (sumTer) sumTer.textContent = terpasang;
-  if (sumBelum) sumBelum.textContent = belum;
-}
+  const teganganVal = (waTegangan.value || "").trim();
+  const noWaVal     = (waNomor.value || "").trim();
 
-function renderLaporanTable() {
-  const table = document.getElementById("laporan-table");
-  if (!table) return;
-  const thead = table.querySelector("thead");
-  const tbody = table.querySelector("tbody");
-  thead.innerHTML = "";
-  tbody.innerHTML = "";
+  // format sesuai permintaan
+  let baseText =
+    "LAPORAN PEMASANGAN\n" +
+    "VKRN KWH SANXING\n\n" +
+    "Nama : " + (currentPel.nama || "") + "\n" +
+    "IDPEL : " + (currentPel.id || "") + "\n" +
+    "Alamat : " + (currentPel.alamat || "") + "\n" +
+    "Tegangan kwh sanxing : " + (teganganVal || "xxx") + " Volt\n" +
+    "No WA : " + noWaVal + "\n" +
+    "Lokasi Pemasangan :\n";
 
-  if (!laporanHeaders.length) return;
-
-  const trHead = document.createElement("tr");
-  laporanHeaders.forEach(h => {
-    const th = document.createElement("th");
-    th.textContent = h;
-    trHead.appendChild(th);
-  });
-  thead.appendChild(trHead);
-
-  laporanData.forEach(row => {
-    const tr = document.createElement("tr");
-    for (let i = 0; i < laporanHeaders.length; i++) {
-      const td = document.createElement("td");
-      td.textContent = row[i] || "";
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  });
-}
-
-// FILTER & SORT laporan
-function applyLaporanSort() {
-  if (!laporanDataOriginal.length) return;
-
-  const sortKet = (document.getElementById("sort-keterangan")?.value || "").toLowerCase();
-  const sortPet = (document.getElementById("sort-petugas")?.value || "").toLowerCase();
-
-  let working = laporanDataOriginal.map(r => r.slice());
-
-  if (sortKet && laporanIdxStatus >= 0) {
-    working = working.filter(row => {
-      const vRaw = (row[laporanIdxStatus] || "");
-      const v = vRaw.toString().toLowerCase().trim();
-
-      if (sortKet === "terpasang") {
-        return v.includes("terpasang") || v.includes("sudah");
-      }
-      if (sortKet === "kosong") {
-        return !v;
-      }
-      return true;
-    });
+  // ambil lokasi perangkat
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      (pos)=>{
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const locUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+        const finalText = baseText + locUrl;
+        openWhatsAppWithText(finalText);
+      },
+      (err)=>{
+        const finalText = baseText + "(lokasi tidak dapat diambil)";
+        openWhatsAppWithText(finalText);
+      },
+      {enableHighAccuracy:true, timeout:10000}
+    );
+  }else{
+    const finalText = baseText + "(lokasi tidak didukung di perangkat ini)";
+    openWhatsAppWithText(finalText);
   }
+});
 
-  if (sortPet && laporanIdxPet >= 0) {
-    working = working.filter(row => {
-      const v = (row[laporanIdxPet] || "").toString().toLowerCase();
-      return v.includes(sortPet);
+/* ===========================
+   SERVICE WORKER REGISTRATION
+=========================== */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("sw.js").catch(err=>{
+      console.error("SW register gagal", err);
     });
-  }
-
-  laporanData = working;
-  renderLaporanTable();
-}
-
-const sortKetSelect = document.getElementById("sort-keterangan");
-if (sortKetSelect) {
-  sortKetSelect.addEventListener("change", () => {
-    applyLaporanSort();
-  });
-}
-const sortPetSelect = document.getElementById("sort-petugas");
-if (sortPetSelect) {
-  sortPetSelect.addEventListener("change", () => {
-    applyLaporanSort();
   });
 }
 
-// 10. Tab switching
-document.querySelectorAll(".nav-item").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    document.getElementById("header-subtitle").textContent = btn.dataset.title;
-
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active-page"));
-    const targetPage = document.getElementById(btn.dataset.target);
-    if (targetPage) {
-      targetPage.classList.add("active-page");
-    }
-
-    if (btn.dataset.target === "laporan") {
-      loadLaporan();
-    }
-  });
+/* ===========================
+   START: hanya load pemasangan di awal
+=========================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  loadData();
 });
 </script>
 
 </body>
-</html>
+  </html>
