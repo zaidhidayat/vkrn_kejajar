@@ -29,6 +29,33 @@ body{
   padding:10px 14px;
   position:sticky;
   top:0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.h-title{
+  line-height:1.3;
+}
+
+/* tombol refresh di header */
+.btn-refresh{
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.15);
+  color:#fff;
+  padding:6px 30px;
+  font-size:12px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.btn-refresh span.icon{
+  font-size:14px;
+}
+.btn-refresh:active{
+  transform:scale(0.94);
 }
 
 /* KONTEN */
@@ -392,13 +419,28 @@ body{
   background:#22c55e;
   color:#fff;
 }
+
+/* LOADING TEXT DI KARTU */
+.loading-text{
+  padding:16px;
+  text-align:center;
+  font-size:13px;
+  color:#374151;
+  font-style:italic;
+}
 </style>
 </head>
 <body>
 
 <div class="app">
   <div class="h">
-    PLN ULP Wonosobo<br><small>VKRN Kejajar</small>
+    <div class="h-title">
+      PLN ULP Wonosobo<br><small>VKRN Kejajar</small>
+    </div>
+    <button id="btnRefresh" class="btn-refresh" title="Refresh data pemasangan">
+      <span class="icon">⟳</span>
+      <span>Refresh</span>
+    </button>
   </div>
 
   <!-- PEMASANGAN -->
@@ -616,6 +658,7 @@ const searchBar     = document.querySelector(".searchBar");
 const pagePemasangan=document.getElementById("pagePemasangan");
 const pageLaporan   =document.getElementById("pageLaporan");
 const laporanInfo   =document.getElementById("laporanInfo");
+const btnRefresh    =document.getElementById("btnRefresh");
 
 /* ===========================
    CSV PARSER
@@ -675,8 +718,11 @@ async function loadData(){
 
     tampil();
   }catch(e){
-    // kalau offline dan fetch gagal, kartu tidak akan muncul tapi HTML tetap terbuka
     console.error("Gagal memuat data pemasangan", e);
+    const box=document.getElementById("cards");
+    if(box){
+      box.innerHTML = "<div class='loading-text'>Gagal memuat data pemasangan. Coba tekan tombol Refresh.</div>";
+    }
   }
 }
 
@@ -717,6 +763,10 @@ function tampil(filter=""){
     input.style.display="none";
   } else {
     input.style.display="block";
+  }
+
+  if(!count){
+    box.innerHTML = "<div class='loading-text'>Data tidak ditemukan untuk kata kunci tersebut.</div>";
   }
 }
 
@@ -772,7 +822,6 @@ function clearScreenForWhatsApp(){
   if(pageLaporan) pageLaporan.style.display = "none";
   if(navBar) navBar.style.display = "none";
   if(searchBar) searchBar.style.display = "none";
-  // di luar tampilan foto program, WA disembunyikan
   if(waBtn) waBtn.style.display = "none";
 }
 
@@ -781,7 +830,6 @@ function restoreMainUI(){
   if(pageLaporan) pageLaporan.style.display = "none";
   if(navBar) navBar.style.display = "flex";
   if(searchBar) searchBar.style.display = "flex";
-  // pastikan WA tetap tersembunyi di tampilan utama
   if(waBtn) waBtn.style.display = "none";
 }
 
@@ -912,7 +960,6 @@ navHome.onclick=()=>{
   navLap.classList.remove("aktif");
   if(navBar) navBar.style.display = "flex";
   if(searchBar) searchBar.style.display="flex";
-  // pastikan WA hilang di halaman utama
   if(waBtn) waBtn.style.display = "none";
 };
 
@@ -923,7 +970,6 @@ navLap.onclick=()=>{
   navHome.classList.remove("aktif");
   if(navBar) navBar.style.display = "flex";
   if(searchBar) searchBar.style.display="none";
-  // pastikan WA hilang di halaman laporan
   if(waBtn) waBtn.style.display = "none";
 
   // baru load laporan saat pertama kali buka
@@ -936,7 +982,6 @@ navLap.onclick=()=>{
 
 function openWhatsAppWithText(text){
   const url = "https://wa.me/?text=" + encodeURIComponent(text);
-  // dianggap sudah mengirim pesan -> sembunyikan tombol WA & form
   waBtn.style.display = "none";
   waFormView.style.display = "none";
   window.open(url, "_blank");
@@ -948,7 +993,6 @@ waBtn.addEventListener("click",(e)=>{
     alert("Pilih pelanggan terlebih dahulu melalui tombol 'Lihat Program'.");
     return;
   }
-  // bersihkan layar lalu tampilkan form WA
   clearScreenForWhatsApp();
   waFormView.style.display = "flex";
 });
@@ -967,7 +1011,6 @@ btnWaKirim.addEventListener("click",()=>{
   const teganganVal = (waTegangan.value || "").trim();
   const noWaVal     = (waNomor.value || "").trim();
 
-  // format sesuai permintaan
   let baseText =
     "LAPORAN PEMASANGAN\n" +
     "VKRN KWH SANXING\n\n" +
@@ -978,7 +1021,6 @@ btnWaKirim.addEventListener("click",()=>{
     "No WA : " + noWaVal + "\n" +
     "Lokasi Pemasangan :\n";
 
-  // ambil lokasi perangkat
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
       (pos)=>{
@@ -1001,6 +1043,19 @@ btnWaKirim.addEventListener("click",()=>{
 });
 
 /* ===========================
+   TOMBOL REFRESH DATA
+=========================== */
+if(btnRefresh){
+  btnRefresh.addEventListener("click", ()=>{
+    const box=document.getElementById("cards");
+    if(box){
+      box.innerHTML = "<div class='loading-text'>Memuat ulang data pemasangan...</div>";
+    }
+    loadData();
+  });
+}
+
+/* ===========================
    SERVICE WORKER REGISTRATION
 =========================== */
 if("serviceWorker" in navigator){
@@ -1015,6 +1070,10 @@ if("serviceWorker" in navigator){
    START: hanya load pemasangan di awal
 =========================== */
 document.addEventListener("DOMContentLoaded", ()=>{
+  const box=document.getElementById("cards");
+  if(box){
+    box.innerHTML = "<div class='loading-text'>Memuat data pemasangan...</div>";
+  }
   loadData();
 });
 </script>
