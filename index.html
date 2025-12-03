@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pemasangan</title>
+
+<style>
+body{
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#cdeafe,#c8f7d4);
+  margin:0;
+  font-size:14px;
+}
+
+/* APP */
+.app{
+  max-width:430px;
+  margin:auto;
+  background:#ffffffc7;
+  min-height:100vh;
+  padding-bottom:70px;
+}
+
+/* HEADER */
+.h{
+  background:linear-gradient(135deg,#3ba4ff,#00c48c);
+  color:#fff;
+  padding:10px 14px;
+  position:sticky;
+  top:0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.h-title{
+  line-height:1.3;
+}
+
+/* tombol refresh di header */
+.btn-refresh{
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.15);
+  color:#fff;
+  padding:6px 30px;
+  font-size:12px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.btn-refresh span.icon{
+  font-size:14px;
+}
+.btn-refresh:active{
+  transform:scale(0.94);
+}
+
+/* KONTEN */
+.s{padding:12px}
+
+/* KARTU PEMASANGAN */
+.card{
+  background:rgba(255,255,255,0.9);
+  margin:10px 0;
+  padding:14px 16px;
+  border-radius:18px;
+  box-shadow:0 6px 16px rgba(15,23,42,0.12);
+}
+
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+}
+.badge-id{
+  padding:3px 10px;
+  border-radius:999px;
+  font-weight:600;
+  background:#dcfce7;
+  color:#16a34a;
+}
+.id-number{font-weight:600;color:#111827}
+
+.nama-pel{font-size:18px;font-weight:700;margin:4px 0}
+.alamat-pel{font-size:13px;color:#4b5563;margin-bottom:8px}
+.lbl{font-weight:600;color:#111827}
+
+/* meter + tombol */
+.meter-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.meter-pill{
+  padding:6px 10px;
+  border-radius:999px;
+  background:#d1fae5;
+  color:#047857;
+  font-weight:600;
+}
+
+/* tombol lihat */
+.btn-lihat{
+  padding:6px 12px;
+  background:#d1fae5;
+  color:black;
+  border-radius:10px;
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  transition:0.2s;
+}
+.btn-lihat:active{
+  transform:scale(0.96);
+}
+
+/* NAV BAWAH */
+.nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  display:flex;justify-content:space-around;
+  background:#fff;border-top:1px solid #ddd;
+  padding:12px 0;font-size:16px;
+}
+.nav span{cursor:pointer;padding:6px 12px}
+.nav .aktif{color:#1d4ed8;font-weight:700}
+
+/* PENCARIAN (PEMASANGAN SAJA) */
+.searchBar{
+  position:fixed;
+  top:5px;
+  right:20px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  z-index:30;
+}
+
+.searchBar input{
+  width:150px;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid #5cb4d1;
+  background:white;
+  font-size:16px;
+}
+
+/* 🔎 Tombol cari */
+.searchBtn{
+  width:60px;height:60px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  font-size:32px;
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#30b5ff,#00d48b);
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  transition:0.2s;
+}
+.searchBtn:active{
+  transform:scale(0.92);
+}
+
+/* LAPORAN BOX */
+.laporan-wrap{
+  background:rgba(255,255,255,0.9);
+  padding:12px;
+  border-radius:18px;
+  box-shadow:0 6px 16px rgba(15,23,42,0.12);
+  margin-top:8px;
+}
+
+#laporanInfo{
+  font-size:16px;
+  color:#4b5563;
+  margin-bottom:6px;
+}
+
+/* FILTER 1 BARIS */
+.filter-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.filter-group{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.filter-label{
+  font-weight:600;
+  color:#374151;
+  font-size:14px;
+}
+
+.filter-select{
+  padding:5px 8px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  background:#f9fafb;
+  font-size:12px;
+  width:100%;
+}
+
+/* JUMLAH DATA */
+.laporan-count{
+  font-size:14px;
+  color:#111827;
+  margin-bottom:4px;
+  font-weight:600;
+}
+
+/* TABEL */
+.table-container{
+  max-width:100%;
+  overflow-x:auto;
+}
+
+#tLaporan{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:600px;
+}
+
+#tLaporan th,
+#tLaporan td{
+  padding:6px 8px;
+  border-bottom:1px solid #e5e7eb;
+  white-space:nowrap;
+}
+
+#tLaporan th{
+  background:#eff6ff;
+  font-weight:600;
+}
+
+#tLaporan tr:nth-child(even) td{
+  background:#f9fafb;
+}
+
+/* =========================
+   PROGRAM VIEW OVERLAY
+========================= */
+.program-view{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
+
+.program-box{
+  background:#f9fafb;
+  border-radius:18px;
+  padding:12px;
+  width:90%;
+  max-width:430px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.program-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.program-title{
+  font-weight:700;
+  font-size:14px;
+  color:#111827;
+}
+
+.program-sub{
+  font-size:12px;
+  color:#6b7280;
+}
+
+.btn-close-program{
+  border:none;
+  border-radius:12px;
+  padding:12px 10px;
+  font-size:12px;
+  cursor:pointer;
+  background:#ef4444;
+  color:#fff;
+}
+
+.program-img-wrap{
+  background:#111827;
+  border-radius:14px;
+  padding:8px;
+  max-height:70vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.program-img{
+  max-width:100%;
+  max-height:65vh;
+  border-radius:10px;
+  object-fit:contain;
+  background:#000;
+}
+
+.program-msg{
+  margin-top:6px;
+  font-size:11px;
+  color:#e5e7eb;
+  text-align:center;
+}
+
+/* FLOATING WHATSAPP BUTTON (pakai gambar PNG) */
+.wa-btn{
+  position:fixed;
+  right:18px;
+  bottom:80px; /* di atas nav bawah */
+  width:64px;
+  height:64px;
+  display:none; /* awalnya tidak tampil */
+  z-index:60;
+}
+.wa-btn img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.wa-btn:active{
+  transform:scale(0.94);
+}
+
+/* =========================
+   WA FORM OVERLAY
+========================= */
+.wa-form-view{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,0.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:70;
+}
+
+.wa-form-box{
+  background:#f9fafb;
+  border-radius:18px;
+  padding:14px;
+  width:90%;
+  max-width:430px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.wa-form-title{
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:30px;
+  color:#111827;
+}
+
+.wa-form-field{
+  margin-bottom:8px;
+  font-size:14px;
+}
+
+.wa-form-field label{
+  display:block;
+  margin-bottom:3px;
+  color:#374151;
+  font-weight:600;
+}
+
+.wa-form-field input{
+  width:100%;
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+  box-sizing:border-box;
+}
+
+.wa-form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:4px;
+}
+
+.btn-wa{
+  border:none;
+  border-radius:12px;
+  padding:15px 26px;
+  font-size:1rpx;
+  cursor:pointer;
+}
+
+.btn-wa-cancel{
+  background:yellow;
+  color:#111827;
+}
+
+.btn-wa-send{
+  background:#22c55e;
+  color:#fff;
+}
+
+/* LOADING TEXT DI KARTU */
+.loading-text{
+  padding:16px;
+  text-align:center;
+  font-size:13px;
+  color:#374151;
+  font-style:italic;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="h">
+    <div class="h-title">
+      PLN ULP Wonosobo<br><small>VKRN Kejajar</small>
+    </div>
+    <button id="btnRefresh" class="btn-refresh" title="Refresh data">
+      <span class="icon">⟳</span>
+      <span>Refresh</span>
+    </button>
+  </div>
+
+  <!-- PEMASANGAN -->
+  <div class="s" id="pagePemasangan">
+    <div id="cards"></div>
+  </div>
+
+  <!-- LAPORAN -->
+  <div class="s" id="pageLaporan" style="display:none">
+    <div class="laporan-wrap">
+      <div id="laporanInfo">Laporan akan dimuat saat menu dibuka.</div>
+
+      <!-- FILTER 1 BARIS -->
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">Status:</span>
+          <select id="selStatus" class="filter-select">
+            <option value="all">Semua</option>
+            <option value="terpasang">Terpasang</option>
+            <option value="belum">Belum Terpasang</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Petugas:</span>
+          <select id="selPetugas" class="filter-select">
+            <option value="all">Semua</option>
+            <option value="supri">Supri</option>
+            <option value="emi">Emi</option>
+            <option value="sarwono">Sarwono</option>
+            <option value="dayat">Dayat</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="laporanCount" class="laporan-count">Jumlah data: 0</div>
+
+      <div class="table-container">
+        <table id="tLaporan"></table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OVERLAY PROGRAM VIEW -->
+  <div class="program-view" id="programView">
+    <div class="program-box">
+      <div class="program-header">
+        <div>
+          <div class="program-title">Foto Program Pemasangan</div>
+          <div class="program-sub" id="programSub">IDPEL: -</div>
+        </div>
+        <button class="btn-close-program" id="btnCloseProgram">Kembali</button>
+      </div>
+      <div class="program-img-wrap">
+        <img id="programImg" class="program-img" src="" alt="Dokumentasi pemasangan">
+      </div>
+      <div class="program-msg" id="programMsg"></div>
+    </div>
+  </div>
+
+  <!-- OVERLAY FORM WHATSAPP -->
+  <div class="wa-form-view" id="waFormView">
+    <div class="wa-form-box">
+      <div class="wa-form-title">Kirim Laporan via WhatsApp</div>
+
+      <div class="wa-form-field">
+        <label for="waTegangan">Tegangan kwh sanxing (Volt)</label>
+        <input id="waTegangan" type="number" inputmode="numeric" placeholder="Contoh: 220">
+      </div>
+
+      <div class="wa-form-field">
+        <label for="waNomor">No WA Pelanggan</label>
+        <input id="waNomor" type="tel" placeholder="Contoh: 62812xxxxxxx">
+      </div>
+
+      <div class="wa-form-actions">
+        <button class="btn-wa btn-wa-cancel" id="btnWaBatal">Batal</button>
+        <button class="btn-wa btn-wa-send" id="btnWaKirim">Kirim WA</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <span id="navHome" class="aktif">🔌 Pemasangan</span>
+  <span id="navLap">📊 Laporan</span>
+</div>
+
+<!-- FLOATING WHATSAPP BUTTON (pakai gambar 20251202_024417.png) -->
+<a href="javascript:void(0)" class="wa-btn" id="waBtn" rel="noopener">
+  <img src="20251202_024417.png" alt="Kirim via WhatsApp">
+</a>
+
+<!-- SEARCH (PEMASANGAN SAJA) -->
+<div class="searchBar">
+  <input id="cari" placeholder="Cari...">
+  <button class="searchBtn" id="btnSearch">🔍</button>
+</div>
+
+<script>
+/* ===========================
+   MAP IDPEL -> FILE GAMBAR
+   folder: asset/
+=========================== */
+const imgMap = {
+ "522052132974":"akt kol sanxing hidayat-10.webp",
+ "522051779331":"akt kol sanxing hidayat-11.webp",
+ "522051782525":"akt kol sanxing hidayat-1.webp",
+ "522051746502":"akt kol sanxing hidayat-14.webp",
+ "522051767702":"akt kol sanxing hidayat-13.webp",
+ "522051344755":"akt kol sanxing hidayat-12.webp",
+ "522051782708":"akt kol sanxing hidayat-15.webp",
+ "522051797405":"akt kol sanxing hidayat-17.webp",
+ "522051816290":"akt kol sanxing hidayat-16.webp",
+ "522051820358":"akt kol sanxing hidayat-19.webp",
+ "522051812538":"akt kol sanxing hidayat-2.webp",
+ "522051772368":"akt kol sanxing hidayat-18.webp",
+ "522051904524":"akt kol sanxing hidayat-22.webp",
+ "522051819447":"akt kol sanxing hidayat-20.webp",
+ "522051775842":"akt kol sanxing hidayat-21.webp",
+ "522051031913":"akt kol sanxing hidayat-23.webp",
+ "522051791597":"akt kol sanxing hidayat-25.webp",
+ "522051776637":"akt kol sanxing hidayat-24.webp",
+ "522051791762":"akt kol sanxing hidayat-26.webp",
+ "522051900685":"akt kol sanxing hidayat-27.webp",
+ "522051776716":"akt kol sanxing hidayat-28.webp",
+ "522052133105":"akt kol sanxing hidayat-30.webp",
+ "522051807507":"akt kol sanxing hidayat-3.webp",
+ "522051909326":"akt kol sanxing hidayat-29.webp",
+ "522051802945":"akt kol sanxing hidayat-33.webp",
+ "522051781714":"akt kol sanxing hidayat-32.webp",
+ "522051772462":"akt kol sanxing hidayat-31.webp",
+ "522051903085":"akt kol sanxing hidayat-35.webp",
+ "522051801424":"akt kol sanxing hidayat-36.webp",
+ "522051901895":"akt kol sanxing hidayat-34.webp",
+ "522051779858":"akt kol sanxing hidayat-37.webp",
+ "522050829034":"akt kol sanxing hidayat-39.webp",
+ "522051821527":"akt kol sanxing hidayat-38.webp",
+ "522051808404":"akt kol sanxing hidayat-41.webp",
+ "522051772080":"akt kol sanxing hidayat-4.webp",
+ "522051770857":"akt kol sanxing hidayat-40.webp",
+ "522051781158":"akt kol sanxing hidayat-42.webp",
+ "522051809700":"akt kol sanxing hidayat-44.webp",
+ "522051784538":"akt kol sanxing hidayat-43.webp",
+ "522051904382":"akt kol sanxing hidayat-47.webp",
+ "522051815145":"akt kol sanxing hidayat-46.webp",
+ "522051823658":"akt kol sanxing hidayat-45.webp",
+ "522051797583":"akt kol sanxing hidayat-5.webp",
+ "522051863422":"akt kol sanxing hidayat-49.webp",
+ "522050868977":"akt kol sanxing hidayat-48.webp",
+ "522052132336":"akt kol sanxing hidayat-50.webp",
+ "522051777743":"akt kol sanxing hidayat-52.webp",
+ "522051785094":"akt kol sanxing hidayat-51.webp",
+ "522051805544":"akt kol sanxing hidayat-55.webp",
+ "522050805388":"akt kol sanxing hidayat-54.webp",
+ "522051788338":"akt kol sanxing hidayat-53.webp",
+ "522051795475":"akt kol sanxing hidayat-58.webp",
+ "522052133432":"akt kol sanxing hidayat-57.webp",
+ "522051784347":"akt kol sanxing hidayat-56.webp",
+ "522052132369":"akt kol sanxing hidayat-6.webp",
+ "522051800462":"akt kol sanxing hidayat-60.webp",
+ "522051831327":"akt kol sanxing hidayat-59.webp",
+ "522051202159":"akt kol sanxing hidayat-62.webp",
+ "522051829844":"akt kol sanxing hidayat-63.webp",
+ "522051775012":"akt kol sanxing hidayat-61.webp",
+ "522051794529":"akt kol sanxing hidayat-65.webp",
+ "522051775598":"akt kol sanxing hidayat-66.webp",
+ "522051905774":"akt kol sanxing hidayat-64.webp",
+ "522051568799":"akt kol sanxing hidayat-68.webp",
+ "522051903426":"akt kol sanxing hidayat-67.webp",
+ "522051796095":"akt kol sanxing hidayat-69.webp",
+ "522050273221":"akt kol sanxing hidayat-70.webp",
+ "522051785833":"akt kol sanxing hidayat-71.webp",
+ "522052132422":"akt kol sanxing hidayat-7.webp",
+ "522050283298":"akt kol sanxing hidayat-74.webp",
+ "522051802994":"akt kol sanxing hidayat-72.webp",
+ "522051778425":"akt kol sanxing hidayat-73.webp",
+ "522052132820":"akt kol sanxing hidayat-77.webp",
+ "522051903570":"akt kol sanxing hidayat-75.webp",
+ "522051775722":"akt kol sanxing hidayat-76.webp",
+ "522052132759":"akt kol sanxing hidayat-8.webp",
+ "522052132414":"akt kol sanxing hidayat-9.webp"
+};
+
+/* ===========================
+   GLOBAL STATE
+=========================== */
+let data=[];                 // data pemasangan
+let currentPel = null;       // pelanggan aktif
+
+let laporanHeaders=[];
+let laporanRows=[];
+let laporanIdxKet=-1;
+let laporanIdxPet=-1;
+let laporanStatusFilter="all";
+let laporanPetugasFilter="all";
+let laporanLoaded=false;     // supaya load laporan hanya sekali
+
+/* DOM refs umum */
+const programView   = document.getElementById("programView");
+const programImg    = document.getElementById("programImg");
+const programSub    = document.getElementById("programSub");
+const programMsg    = document.getElementById("programMsg");
+const btnCloseProg  = document.getElementById("btnCloseProgram");
+const waBtn         = document.getElementById("waBtn");
+const waFormView    = document.getElementById("waFormView");
+const waTegangan    = document.getElementById("waTegangan");
+const waNomor       = document.getElementById("waNomor");
+const btnWaBatal    = document.getElementById("btnWaBatal");
+const btnWaKirim    = document.getElementById("btnWaKirim");
+const navBar        = document.querySelector(".nav");
+const searchBar     = document.querySelector(".searchBar");
+const pagePemasangan=document.getElementById("pagePemasangan");
+const pageLaporan   =document.getElementById("pageLaporan");
+const laporanInfo   =document.getElementById("laporanInfo");
+const btnRefresh    =document.getElementById("btnRefresh");
+
+/* ===========================
+   CSV PARSER
+=========================== */
+function parseCSVLine(l){
+  let a=[],c="",q=false;
+  for(let ch of l){
+    if(ch === '"'){ q=!q; continue; }
+    if(ch === "," && !q){ a.push(c); c=""; }
+    else c += ch;
+  }
+  a.push(c);
+  return a.map(x=>x.trim());
+}
+
+/* ===========================
+   LOAD DATA PEMASANGAN
+=========================== */
+async function loadData(){
+  const url="https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/sanxing1";
+  try{
+    const txt=await fetch(url).then(r=>r.text());
+    const lines=txt.split(/\r?\n/).filter(x=>x.trim());
+    const head=parseCSVLine(lines[0]).map(h=>h.toUpperCase());
+    const gi=x=>head.indexOf(x)>=0 ? head.indexOf(x) : -1;
+
+    const idxID=gi("IDPEL"),
+          idxN =gi("NAMA"),
+          idxP =gi("NAMAPNJ"),
+          idxRT=gi("RT"),
+          idxRW=gi("RW"),
+          idxKEL=gi("NAMA_KELURAHAN"),
+          idxKEC=gi("NAMA_KECAMATAN"),
+          idxM =gi("NOMOR_METER_KWH");
+
+    data=[];
+
+    for(let i=1;i<lines.length;i++){
+      const c=parseCSVLine(lines[i]);
+      if(!c[idxID]) continue;
+
+      const alamat=[
+        c[idxP]||"",
+        c[idxRT] ? "RT "+c[idxRT] : "",
+        c[idxRW] ? "RW "+c[idxRW] : "",
+        c[idxKEL]||"",
+        c[idxKEC]||""
+      ].filter(Boolean).join(", ");
+
+      data.push({
+        id:c[idxID],
+        nama:c[idxN]||"",
+        alamat,
+        meter:c[idxM]||""
+      });
+    }
+
+    tampil();
+  }catch(e){
+    console.error("Gagal memuat data pemasangan", e);
+    const box=document.getElementById("cards");
+    if(box){
+      box.innerHTML = "<div class='loading-text'>Gagal memuat data pemasangan. Coba tekan tombol Refresh.</div>";
+    }
+  }
+}
+
+/* ===========================
+   CARD RENDER PEMASANGAN
+=========================== */
+function tampil(filter=""){
+  const box=document.getElementById("cards");
+  const input=document.getElementById("cari");
+
+  filter=filter.toLowerCase();
+  box.innerHTML="";
+  let count=0;
+
+  data.forEach(x=>{
+    const t=(x.id+" "+x.nama+" "+x.alamat+" "+x.meter).toLowerCase();
+    if(filter && !t.includes(filter)) return;
+    count++;
+
+    box.innerHTML += `
+      <div class="card">
+        <div class="card-top">
+          <span class="badge-id">ID PEL</span>
+          <span class="id-number">${x.id}</span>
+        </div>
+
+        <div class="nama-pel">${x.nama}</div>
+        <div class="alamat-pel"><span class="lbl">Alamat:</span> ${x.alamat}</div>
+
+        <div class="meter-wrap">
+          <div class="meter-pill">No Sanxing: ${x.meter}</div>
+          <button class="btn-lihat" onclick="lihatProgram('${x.id}')">Lihat Program</button>
+        </div>
+      </div>`;
+  });
+
+  if(filter && count === 1){
+    input.style.display="none";
+  } else {
+    input.style.display="block";
+  }
+
+  if(!count){
+    box.innerHTML = "<div class='loading-text'>Data tidak ditemukan untuk kata kunci tersebut.</div>";
+  }
+}
+
+/* ===========================
+   PROGRAM VIEW HANDLER
+=========================== */
+function lihatProgram(id){
+  // simpan pelanggan aktif
+  currentPel = data.find(d => d.id === id) || {id, nama:"", alamat:"", meter:""};
+
+  const file = imgMap[id];
+  programSub.textContent = "IDPEL: " + id;
+
+  if(file){
+    programImg.style.display = "block";
+    programImg.src = "asset/" + file;
+    programImg.alt = "Dokumentasi pemasangan " + id;
+    programMsg.textContent = "Gambar diambil dari asset: " + file;
+  }else{
+    programImg.style.display = "none";
+    programImg.src = "";
+    programMsg.textContent = "Gambar untuk IDPEL ini belum tersedia di folder asset.";
+  }
+
+  // tampilkan overlay program
+  programView.style.display = "flex";
+
+  // tampilkan tombol WhatsApp (hanya saat tampilan foto program)
+  waBtn.style.display = "flex";
+}
+
+btnCloseProg.addEventListener("click",()=>{
+  programView.style.display = "none";
+  // sembunyikan WA saat keluar dari tampilan foto program
+  waBtn.style.display = "none";
+});
+
+/* klik di luar kotak untuk menutup overlay */
+programView.addEventListener("click",(e)=>{
+  if(e.target === programView){
+    programView.style.display = "none";
+    // sembunyikan WA saat keluar dari tampilan foto program
+    waBtn.style.display = "none";
+  }
+});
+
+/* ===========================
+   BERSIHKAN & RESTORE LAYAR
+=========================== */
+function clearScreenForWhatsApp(){
+  if(programView) programView.style.display = "none";
+  if(pagePemasangan) pagePemasangan.style.display = "none";
+  if(pageLaporan) pageLaporan.style.display = "none";
+  if(navBar) navBar.style.display = "none";
+  if(searchBar) searchBar.style.display = "none";
+  if(waBtn) waBtn.style.display = "none";
+}
+
+function restoreMainUI(){
+  if(pagePemasangan) pagePemasangan.style.display = "block";
+  if(pageLaporan) pageLaporan.style.display = "none";
+  if(navBar) navBar.style.display = "flex";
+  if(searchBar) searchBar.style.display = "flex";
+  if(waBtn) waBtn.style.display = "none";
+}
+
+/* ===========================
+   PENCARIAN PEMASANGAN
+=========================== */
+const inputCari=document.getElementById("cari");
+const btnSearch=document.getElementById("btnSearch");
+
+inputCari.addEventListener("input",()=>tampil(inputCari.value));
+
+btnSearch.addEventListener("click",()=>{
+  if(inputCari.style.display==="none"){
+    inputCari.value="";
+    inputCari.style.display="block";
+    tampil("");
+    inputCari.focus();
+  }else if(inputCari.value){
+    inputCari.value="";
+    tampil("");
+    inputCari.focus();
+  }else{
+    inputCari.focus();
+  }
+});
+
+/* ===========================
+   LOAD LAPORAN (lazy load dengan perbandingan data)
+=========================== */
+async function loadLaporan(){
+  if(laporanLoaded) return; // sudah pernah dimuat
+
+  const url="https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/laporan_sanxing.csv";
+  try{
+    laporanInfo.textContent="Memuat laporan pemasangan...";
+
+    // Cek data di localStorage
+    const localLaporanKey = "vkrn_laporan_sanxing";
+    const localData = localStorage.getItem(localLaporanKey);
+    let localRows = [];
+    let localHeaders = [];
+    
+    if(localData){
+      try {
+        const parsed = JSON.parse(localData);
+        localHeaders = parsed.headers || [];
+        localRows = parsed.rows || [];
+        console.log(`Data lokal: ${localRows.length} baris`);
+      } catch(e) {
+        console.error("Error parsing local data", e);
+      }
+    }
+
+    // Ambil data dari GitHub
+    const txt=await fetch(url).then(r=>r.text());
+    const lines=txt.split(/\r?\n/).filter(x=>x.trim());
+    const githubHeaders=parseCSVLine(lines[0]);
+    const githubRows=[];
+
+    for(let i=1;i<lines.length;i++){
+      const cols=parseCSVLine(lines[i]);
+      if(cols.every(v => !v || !v.trim())) continue;
+      githubRows.push(cols);
+    }
+    
+    console.log(`Data GitHub: ${githubRows.length} baris`);
+
+    // Bandingkan mana yang lebih banyak
+    if(githubRows.length > localRows.length){
+      // Gunakan data GitHub jika lebih banyak
+      laporanHeaders = githubHeaders;
+      laporanRows = githubRows;
+      
+      // Simpan ke localStorage
+      localStorage.setItem(localLaporanKey, JSON.stringify({
+        headers: githubHeaders,
+        rows: githubRows,
+        lastUpdated: new Date().toISOString()
+      }));
+      
+      console.log("Menggunakan data GitHub (lebih banyak)");
+      laporanInfo.textContent = "Laporan pemasangan Sanxing (data terbaru dari GitHub).";
+    } else {
+      // Gunakan data lokal jika lebih banyak atau sama
+      laporanHeaders = localHeaders;
+      laporanRows = localRows;
+      console.log("Menggunakan data lokal (lebih banyak atau sama)");
+      laporanInfo.textContent = "Laporan pemasangan Sanxing (data lokal).";
+    }
+
+    const hUpper=laporanHeaders.map(h=>h.toUpperCase());
+    laporanIdxKet = hUpper.indexOf("KETERANGAN");
+    laporanIdxPet = hUpper.indexOf("PETUGAS");
+
+    laporanLoaded = true;
+    renderLaporanTable();
+  }catch(e){
+    // Jika gagal ambil dari GitHub, coba pakai data lokal
+    const localLaporanKey = "vkrn_laporan_sanxing";
+    const localData = localStorage.getItem(localLaporanKey);
+    
+    if(localData){
+      try {
+        const parsed = JSON.parse(localData);
+        const localHeaders = parsed.headers || [];
+        const localRows = parsed.rows || [];
+        
+        if(localRows.length > 0){
+          laporanHeaders = localHeaders;
+          laporanRows = localRows;
+          
+          const hUpper=laporanHeaders.map(h=>h.toUpperCase());
+          laporanIdxKet = hUpper.indexOf("KETERANGAN");
+          laporanIdxPet = hUpper.indexOf("PETUGAS");
+          
+          laporanLoaded = true;
+          renderLaporanTable();
+          laporanInfo.textContent="Laporan pemasangan Sanxing (menggunakan data lokal karena offline).";
+        } else {
+          laporanInfo.textContent="Gagal memuat data laporan (mungkin offline dan tidak ada data lokal).";
+        }
+      } catch(err) {
+        laporanInfo.textContent="Gagal memuat data laporan (format data lokal error).";
+      }
+    } else {
+      laporanInfo.textContent="Gagal memuat data laporan (mungkin offline dan tidak ada data lokal).";
+    }
+    console.error("Gagal memuat laporan", e);
+  }
+}
+
+/* ===========================
+   RENDER TABLE + FILTER
+=========================== */
+function renderLaporanTable(){
+  const tbl=document.getElementById("tLaporan");
+  const countEl=document.getElementById("laporanCount");
+
+  let html="<thead><tr>";
+  laporanHeaders.forEach(h=> html+=`<th>${h}</th>`);
+  html+="</tr></thead><tbody>";
+
+  let count=0;
+
+  laporanRows.forEach(cols=>{
+    // STATUS FILTER
+    if(laporanIdxKet >= 0){
+      const ket=(cols[laporanIdxKet]||"").toLowerCase();
+
+      if(laporanStatusFilter==="terpasang" && !ket.includes("terpasang")) return;
+      if(laporanStatusFilter==="belum" && ket.trim()!=="") return;
+    }
+
+    // PETUGAS FILTER
+    if(laporanIdxPet >= 0 && laporanPetugasFilter!=="all"){
+      const pet=(cols[laporanIdxPet]||"").toLowerCase();
+      if(!pet.includes(laporanPetugasFilter)) return;
+    }
+
+    count++;
+
+    html+="<tr>";
+    laporanHeaders.forEach((_,i)=> html+=`<td>${cols[i]||""}</td>`);
+    html+="</tr>";
+  });
+
+  html+="</tbody>";
+  tbl.innerHTML=html;
+
+  countEl.textContent=`Jumlah data: ${count}`;
+}
+
+/* ===========================
+   FILTER EVENTS
+=========================== */
+const selStatus=document.getElementById("selStatus");
+const selPetugas=document.getElementById("selPetugas");
+
+selStatus.onchange=()=>{
+  laporanStatusFilter=selStatus.value;
+  if(laporanLoaded) renderLaporanTable();
+};
+
+selPetugas.onchange=()=>{
+  laporanPetugasFilter=selPetugas.value;
+  if(laporanLoaded) renderLaporanTable();
+};
+
+/* ===========================
+   NAVIGATION
+=========================== */
+const navHome=document.getElementById("navHome");
+const navLap=document.getElementById("navLap");
+
+navHome.onclick=()=>{
+  pagePemasangan.style.display="block";
+  pageLaporan.style.display="none";
+  navHome.classList.add("aktif");
+  navLap.classList.remove("aktif");
+  if(navBar) navBar.style.display = "flex";
+  if(searchBar) searchBar.style.display="flex";
+  if(waBtn) waBtn.style.display = "none";
+};
+
+navLap.onclick=()=>{
+  pagePemasangan.style.display="none";
+  pageLaporan.style.display="block";
+  navLap.classList.add("aktif");
+  navHome.classList.remove("aktif");
+  if(navBar) navBar.style.display = "flex";
+  if(searchBar) searchBar.style.display="none";
+  if(waBtn) waBtn.style.display = "none";
+
+  // baru load laporan saat pertama kali buka
+  loadLaporan();
+};
+
+/* ===========================
+   WHATSAPP FLOW
+=========================== */
+
+function openWhatsAppWithText(text){
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  waBtn.style.display = "none";
+  waFormView.style.display = "none";
+  window.open(url, "_blank");
+}
+
+waBtn.addEventListener("click",(e)=>{
+  e.preventDefault();
+  if(!currentPel){
+    alert("Pilih pelanggan terlebih dahulu melalui tombol 'Lihat Program'.");
+    return;
+  }
+  clearScreenForWhatsApp();
+  waFormView.style.display = "flex";
+});
+
+btnWaBatal.addEventListener("click",()=>{
+  waFormView.style.display = "none";
+  restoreMainUI();
+});
+
+btnWaKirim.addEventListener("click",()=>{
+  if(!currentPel){
+    alert("Data pelanggan tidak ditemukan.");
+    return;
+  }
+
+  const teganganVal = (waTegangan.value || "").trim();
+  const noWaVal     = (waNomor.value || "").trim();
+
+  let baseText =
+    "LAPORAN PEMASANGAN\n" +
+    "VKRN KWH SANXING\n\n" +
+    "Nama : " + (currentPel.nama || "") + "\n" +
+    "IDPEL : " + (currentPel.id || "") + "\n" +
+    "Alamat : " + (currentPel.alamat || "") + "\n" +
+    "Tegangan kwh sanxing : " + (teganganVal || "xxx") + " Volt\n" +
+    "No WA : " + noWaVal + "\n" +
+    "Lokasi Pemasangan :\n";
+
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      (pos)=>{
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const locUrl = "https://www.google.com/maps?q=" + lat + "," + lng;
+        const finalText = baseText + locUrl;
+        openWhatsAppWithText(finalText);
+      },
+      (err)=>{
+        const finalText = baseText + "(lokasi tidak dapat diambil)";
+        openWhatsAppWithText(finalText);
+      },
+      {enableHighAccuracy:true, timeout:10000}
+    );
+  }else{
+    const finalText = baseText + "(lokasi tidak didukung di perangkat ini)";
+    openWhatsAppWithText(finalText);
+  }
+});
+
+/* ===========================
+   FUNGSI NOTIFIKASI SEDERHANA
+=========================== */
+function showNotification(message){
+  // Buat elemen notifikasi
+  const notif = document.createElement("div");
+  notif.style.cssText = `
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-weight: 600;
+    animation: fadeInOut 3s ease-in-out;
+  `;
+  
+  // Tambahkan style animasi
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  notif.textContent = message;
+  document.body.appendChild(notif);
+  
+  // Hapus setelah 3 detik
+  setTimeout(() => {
+    if(notif.parentNode){
+      notif.parentNode.removeChild(notif);
+    }
+  }, 3000);
+}
+
+/* ===========================
+   REFRESH DATA LAPORAN (membandingkan data)
+=========================== */
+async function refreshLaporanData(){
+  if(!laporanLoaded){
+    // Jika belum pernah dimuat, cukup load biasa
+    loadLaporan();
+    return;
+  }
+  
+  const url="https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/laporan_sanxing.csv";
+  const localLaporanKey = "vkrn_laporan_sanxing";
+  
+  laporanInfo.textContent="Memuat ulang data laporan...";
+  
+  try {
+    const txt = await fetch(url).then(r=>r.text());
+    const lines=txt.split(/\r?\n/).filter(x=>x.trim());
+    const githubHeaders=parseCSVLine(lines[0]);
+    const githubRows=[];
+    
+    for(let i=1;i<lines.length;i++){
+      const cols=parseCSVLine(lines[i]);
+      if(cols.every(v => !v || !v.trim())) continue;
+      githubRows.push(cols);
+    }
+    
+    console.log(`Data GitHub saat refresh: ${githubRows.length} baris`);
+    console.log(`Data lokal saat refresh: ${laporanRows.length} baris`);
+    
+    // Bandingkan jumlah data
+    if(githubRows.length > laporanRows.length){
+      // Update dengan data GitHub yang lebih banyak
+      laporanHeaders = githubHeaders;
+      laporanRows = githubRows;
+      
+      // Simpan ke localStorage
+      localStorage.setItem(localLaporanKey, JSON.stringify({
+        headers: githubHeaders,
+        rows: githubRows,
+        lastUpdated: new Date().toISOString()
+      }));
+      
+      const hUpper=laporanHeaders.map(h=>h.toUpperCase());
+      laporanIdxKet = hUpper.indexOf("KETERANGAN");
+      laporanIdxPet = hUpper.indexOf("PETUGAS");
+      
+      renderLaporanTable();
+      laporanInfo.textContent = "Laporan pemasangan Sanxing (data diperbarui dari GitHub).";
+      
+      // Tampilkan notifikasi
+      showNotification(`Data laporan diperbarui: ${githubRows.length} entri`);
+    } else {
+      laporanInfo.textContent = "Laporan pemasangan Sanxing (data lokal masih yang terbaru).";
+      showNotification(`Data lokal masih yang terbaru: ${laporanRows.length} entri`);
+    }
+  } catch(e){
+    console.error("Gagal refresh laporan", e);
+    laporanInfo.textContent = "Gagal memuat data terbaru (mungkin offline).";
+    showNotification("Gagal memuat data terbaru. Periksa koneksi internet.");
+  }
+}
+
+/* ===========================
+   CLEAR LOCAL DATA (untuk debugging)
+=========================== */
+function clearLocalLaporanData(){
+  localStorage.removeItem("vkrn_laporan_sanxing");
+  laporanLoaded = false;
+  laporanRows = [];
+  laporanHeaders = [];
+  console.log("Data laporan lokal telah dihapus");
+  showNotification("Data lokal laporan telah dihapus");
+  
+  // Refresh tampilan
+  if(pageLaporan.style.display === "block"){
+    loadLaporan();
+  }
+}
+
+/* ===========================
+   TOMBOL REFRESH DATA (untuk kedua halaman)
+=========================== */
+if(btnRefresh){
+  btnRefresh.addEventListener("click", ()=>{
+    // Cek halaman mana yang aktif
+    const isLaporanPage = pageLaporan.style.display === "block";
+    
+    if(isLaporanPage){
+      // Refresh data laporan
+      refreshLaporanData();
+    } else {
+      // Refresh data pemasangan
+      const box=document.getElementById("cards");
+      if(box){
+        box.innerHTML = "<div class='loading-text'>Memuat ulang data pemasangan...</div>";
+      }
+      loadData();
+    }
+  });
+}
+
+/* ===========================
+   SERVICE WORKER REGISTRATION
+=========================== */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("sw.js").catch(err=>{
+      console.error("SW register gagal", err);
+    });
+  });
+}
+
+/* ===========================
+   START: hanya load pemasangan di awal
+=========================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const box=document.getElementById("cards");
+  if(box){
+    box.innerHTML = "<div class='loading-text'>Memuat data pemasangan...</div>";
+  }
+  loadData();
+});
+</script>
+
+</body>
+</html>
