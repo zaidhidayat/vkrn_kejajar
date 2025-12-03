@@ -221,6 +221,32 @@ body{
   font-weight:600;
 }
 
+/* TOMBOL CLEAR DATA */
+.clear-data-row{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+  margin-bottom:5px;
+}
+
+.btn-clear-data{
+  padding:5px 10px;
+  border-radius:8px;
+  border:1px solid #dc2626;
+  background:#fee2e2;
+  color:#dc2626;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
+.btn-clear-data:hover{
+  background:#fecaca;
+}
+.btn-clear-data:active{
+  transform:scale(0.95);
+}
+
 /* TABEL */
 .table-container{
   max-width:100%;
@@ -476,6 +502,13 @@ body{
         </div>
       </div>
 
+      <!-- TOMBOL CLEAR DATA LOKAL -->
+      <div class="clear-data-row">
+        <button class="btn-clear-data" id="btnClearData" title="Hapus data laporan dari penyimpanan lokal">
+          🗑️ Hapus Data Lokal
+        </button>
+      </div>
+
       <div id="laporanCount" class="laporan-count">Jumlah data: 0</div>
 
       <div class="table-container">
@@ -659,6 +692,7 @@ const pagePemasangan=document.getElementById("pagePemasangan");
 const pageLaporan   =document.getElementById("pageLaporan");
 const laporanInfo   =document.getElementById("laporanInfo");
 const btnRefresh    =document.getElementById("btnRefresh");
+const btnClearData  =document.getElementById("btnClearData");
 
 /* ===========================
    CSV PARSER
@@ -1116,7 +1150,27 @@ btnWaKirim.addEventListener("click",()=>{
 /* ===========================
    FUNGSI NOTIFIKASI SEDERHANA
 =========================== */
-function showNotification(message){
+function showNotification(message, type = "info"){
+  // Tentukan warna berdasarkan tipe notifikasi
+  let bgColor, textColor;
+  switch(type){
+    case "success":
+      bgColor = "#10b981";
+      textColor = "white";
+      break;
+    case "warning":
+      bgColor = "#f59e0b";
+      textColor = "white";
+      break;
+    case "error":
+      bgColor = "#ef4444";
+      textColor = "white";
+      break;
+    default:
+      bgColor = "#3b82f6";
+      textColor = "white";
+  }
+  
   // Buat elemen notifikasi
   const notif = document.createElement("div");
   notif.style.cssText = `
@@ -1124,27 +1178,32 @@ function showNotification(message){
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: #10b981;
-    color: white;
+    background: ${bgColor};
+    color: ${textColor};
     padding: 12px 20px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     z-index: 1000;
     font-weight: 600;
     animation: fadeInOut 3s ease-in-out;
+    max-width: 80%;
+    text-align: center;
   `;
   
-  // Tambahkan style animasi
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-      15% { opacity: 1; transform: translateX(-50%) translateY(0); }
-      85% { opacity: 1; transform: translateX(-50%) translateY(0); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-    }
-  `;
-  document.head.appendChild(style);
+  // Tambahkan style animasi jika belum ada
+  if(!document.querySelector('#notif-animation-style')){
+    const style = document.createElement("style");
+    style.id = "notif-animation-style";
+    style.textContent = `
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
   
   notif.textContent = message;
   document.body.appendChild(notif);
@@ -1208,32 +1267,48 @@ async function refreshLaporanData(){
       laporanInfo.textContent = "Laporan pemasangan Sanxing (data diperbarui dari GitHub).";
       
       // Tampilkan notifikasi
-      showNotification(`Data laporan diperbarui: ${githubRows.length} entri`);
+      showNotification(`Data laporan diperbarui: ${githubRows.length} entri`, "success");
     } else {
       laporanInfo.textContent = "Laporan pemasangan Sanxing (data lokal masih yang terbaru).";
-      showNotification(`Data lokal masih yang terbaru: ${laporanRows.length} entri`);
+      showNotification(`Data lokal masih yang terbaru: ${laporanRows.length} entri`, "info");
     }
   } catch(e){
     console.error("Gagal refresh laporan", e);
     laporanInfo.textContent = "Gagal memuat data terbaru (mungkin offline).";
-    showNotification("Gagal memuat data terbaru. Periksa koneksi internet.");
+    showNotification("Gagal memuat data terbaru. Periksa koneksi internet.", "error");
   }
 }
 
 /* ===========================
-   CLEAR LOCAL DATA (untuk debugging)
+   CLEAR LOCAL DATA LAPORAN
 =========================== */
 function clearLocalLaporanData(){
-  localStorage.removeItem("vkrn_laporan_sanxing");
+  // Konfirmasi sebelum menghapus
+  if(!confirm("Yakin ingin menghapus data laporan dari penyimpanan lokal?\n\nData dari GitHub akan diambil ulang saat refresh.")){
+    return;
+  }
+  
+  const localLaporanKey = "vkrn_laporan_sanxing";
+  
+  // Hapus dari localStorage
+  localStorage.removeItem(localLaporanKey);
+  
+  // Reset state
   laporanLoaded = false;
   laporanRows = [];
   laporanHeaders = [];
-  console.log("Data laporan lokal telah dihapus");
-  showNotification("Data lokal laporan telah dihapus");
   
-  // Refresh tampilan
+  console.log("Data laporan lokal telah dihapus");
+  
+  // Tampilkan notifikasi
+  showNotification("Data laporan lokal telah dihapus", "success");
+  
+  // Jika sedang di halaman laporan, reload data
   if(pageLaporan.style.display === "block"){
-    loadLaporan();
+    laporanInfo.textContent = "Memuat ulang data laporan...";
+    setTimeout(() => {
+      loadLaporan();
+    }, 500);
   }
 }
 
@@ -1260,6 +1335,13 @@ if(btnRefresh){
 }
 
 /* ===========================
+   TOMBOL CLEAR DATA LOKAL
+=========================== */
+if(btnClearData){
+  btnClearData.addEventListener("click", clearLocalLaporanData);
+}
+
+/* ===========================
    SERVICE WORKER REGISTRATION
 =========================== */
 if("serviceWorker" in navigator){
@@ -1283,4 +1365,4 @@ document.addEventListener("DOMContentLoaded", ()=>{
 </script>
 
 </body>
-</html>
+  </html>
