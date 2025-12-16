@@ -477,7 +477,7 @@ body{
   <!-- LAPORAN -->
   <div class="s" id="pageLaporan" style="display:none">
     <div class="laporan-wrap">
-      <div id="laporanInfo">Laporan akan dimuat saat menu dibuka.</div>
+      <div id="laporanInfo">Laporan akan dimuat dari GitHub saat menu dibuka.</div>
 
       <!-- FILTER 1 BARIS -->
       <div class="filter-row">
@@ -502,10 +502,10 @@ body{
         </div>
       </div>
 
-      <!-- TOMBOL CLEAR DATA LOKAL -->
+      <!-- TOMBOL RELOAD DATA DARI GITHUB -->
       <div class="clear-data-row">
-        <button class="btn-clear-data" id="btnClearData" title="Hapus data laporan dari penyimpanan lokal">
-          🗑️ Hapus Data Lokal
+        <button class="btn-clear-data" id="btnClearData" title="Muat ulang data langsung dari GitHub">
+          🔄 Muat Ulang dari GitHub
         </button>
       </div>
 
@@ -891,107 +891,40 @@ btnSearch.addEventListener("click",()=>{
 });
 
 /* ===========================
-   LOAD LAPORAN (lazy load dengan perbandingan data)
+   LOAD LAPORAN (selalu ambil dari GitHub, tanpa cache lokal)
 =========================== */
 async function loadLaporan(){
-  if(laporanLoaded) return; // sudah pernah dimuat
-
   const url="https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/laporan_sanxing.csv";
   try{
-    laporanInfo.textContent="Memuat laporan pemasangan...";
-
-    // Cek data di localStorage
-    const localLaporanKey = "vkrn_laporan_sanxing";
-    const localData = localStorage.getItem(localLaporanKey);
-    let localRows = [];
-    let localHeaders = [];
-    
-    if(localData){
-      try {
-        const parsed = JSON.parse(localData);
-        localHeaders = parsed.headers || [];
-        localRows = parsed.rows || [];
-        console.log(`Data lokal: ${localRows.length} baris`);
-      } catch(e) {
-        console.error("Error parsing local data", e);
-      }
-    }
+    laporanInfo.textContent="Memuat laporan pemasangan dari GitHub...";
 
     // Ambil data dari GitHub
     const txt=await fetch(url).then(r=>r.text());
     const lines=txt.split(/\r?\n/).filter(x=>x.trim());
-    const githubHeaders=parseCSVLine(lines[0]);
-    const githubRows=[];
+    laporanHeaders = parseCSVLine(lines[0]);
+    laporanRows = [];
 
     for(let i=1;i<lines.length;i++){
       const cols=parseCSVLine(lines[i]);
       if(cols.every(v => !v || !v.trim())) continue;
-      githubRows.push(cols);
+      laporanRows.push(cols);
     }
     
-    console.log(`Data GitHub: ${githubRows.length} baris`);
+    console.log(`Data GitHub: ${laporanRows.length} baris`);
 
-    // Bandingkan mana yang lebih banyak
-    if(githubRows.length > localRows.length){
-      // Gunakan data GitHub jika lebih banyak
-      laporanHeaders = githubHeaders;
-      laporanRows = githubRows;
-      
-      // Simpan ke localStorage
-      localStorage.setItem(localLaporanKey, JSON.stringify({
-        headers: githubHeaders,
-        rows: githubRows,
-        lastUpdated: new Date().toISOString()
-      }));
-      
-      console.log("Menggunakan data GitHub (lebih banyak)");
-      laporanInfo.textContent = "Laporan pemasangan Sanxing (data terbaru dari GitHub).";
-    } else {
-      // Gunakan data lokal jika lebih banyak atau sama
-      laporanHeaders = localHeaders;
-      laporanRows = localRows;
-      console.log("Menggunakan data lokal (lebih banyak atau sama)");
-      laporanInfo.textContent = "Laporan pemasangan Sanxing (data lokal).";
-    }
-
-    const hUpper=laporanHeaders.map(h=>h.toUpperCase());
+    const hUpper = laporanHeaders.map(h=>h.toUpperCase());
     laporanIdxKet = hUpper.indexOf("KETERANGAN");
     laporanIdxPet = hUpper.indexOf("PETUGAS");
 
     laporanLoaded = true;
+    laporanInfo.textContent = "Laporan pemasangan Sanxing (data langsung dari GitHub).";
     renderLaporanTable();
   }catch(e){
-    // Jika gagal ambil dari GitHub, coba pakai data lokal
-    const localLaporanKey = "vkrn_laporan_sanxing";
-    const localData = localStorage.getItem(localLaporanKey);
-    
-    if(localData){
-      try {
-        const parsed = JSON.parse(localData);
-        const localHeaders = parsed.headers || [];
-        const localRows = parsed.rows || [];
-        
-        if(localRows.length > 0){
-          laporanHeaders = localHeaders;
-          laporanRows = localRows;
-          
-          const hUpper=laporanHeaders.map(h=>h.toUpperCase());
-          laporanIdxKet = hUpper.indexOf("KETERANGAN");
-          laporanIdxPet = hUpper.indexOf("PETUGAS");
-          
-          laporanLoaded = true;
-          renderLaporanTable();
-          laporanInfo.textContent="Laporan pemasangan Sanxing (menggunakan data lokal karena offline).";
-        } else {
-          laporanInfo.textContent="Gagal memuat data laporan (mungkin offline dan tidak ada data lokal).";
-        }
-      } catch(err) {
-        laporanInfo.textContent="Gagal memuat data laporan (format data lokal error).";
-      }
-    } else {
-      laporanInfo.textContent="Gagal memuat data laporan (mungkin offline dan tidak ada data lokal).";
-    }
+    laporanInfo.textContent="Gagal memuat data laporan (mungkin offline).";
     console.error("Gagal memuat laporan", e);
+    
+    // Tampilkan notifikasi error
+    showNotification("Gagal memuat data laporan. Periksa koneksi internet.", "error");
   }
 }
 
@@ -1077,8 +1010,10 @@ navLap.onclick=()=>{
   if(searchBar) searchBar.style.display="none";
   if(waBtn) waBtn.style.display = "none";
 
-  // baru load laporan saat pertama kali buka
-  loadLaporan();
+  // Selalu load laporan dari GitHub saat buka halaman
+  if(!laporanLoaded) {
+    loadLaporan();
+  }
 };
 
 /* ===========================
@@ -1217,99 +1152,48 @@ function showNotification(message, type = "info"){
 }
 
 /* ===========================
-   REFRESH DATA LAPORAN (membandingkan data)
+   REFRESH DATA LAPORAN (selalu ambil ulang dari GitHub)
 =========================== */
 async function refreshLaporanData(){
-  if(!laporanLoaded){
-    // Jika belum pernah dimuat, cukup load biasa
-    loadLaporan();
-    return;
-  }
+  // Reset flag agar loadLaporan bekerja fresh
+  laporanLoaded = false;
   
-  const url="https://raw.githubusercontent.com/zaidhidayat/vkrn_kejajar/main/data/laporan_sanxing.csv";
-  const localLaporanKey = "vkrn_laporan_sanxing";
+  // Tampilkan pesan loading
+  laporanInfo.textContent = "Memuat ulang data laporan dari GitHub...";
   
-  laporanInfo.textContent="Memuat ulang data laporan...";
+  // Panggil loadLaporan yang sudah dimodifikasi
+  await loadLaporan();
   
-  try {
-    const txt = await fetch(url).then(r=>r.text());
-    const lines=txt.split(/\r?\n/).filter(x=>x.trim());
-    const githubHeaders=parseCSVLine(lines[0]);
-    const githubRows=[];
-    
-    for(let i=1;i<lines.length;i++){
-      const cols=parseCSVLine(lines[i]);
-      if(cols.every(v => !v || !v.trim())) continue;
-      githubRows.push(cols);
-    }
-    
-    console.log(`Data GitHub saat refresh: ${githubRows.length} baris`);
-    console.log(`Data lokal saat refresh: ${laporanRows.length} baris`);
-    
-    // Bandingkan jumlah data
-    if(githubRows.length > laporanRows.length){
-      // Update dengan data GitHub yang lebih banyak
-      laporanHeaders = githubHeaders;
-      laporanRows = githubRows;
-      
-      // Simpan ke localStorage
-      localStorage.setItem(localLaporanKey, JSON.stringify({
-        headers: githubHeaders,
-        rows: githubRows,
-        lastUpdated: new Date().toISOString()
-      }));
-      
-      const hUpper=laporanHeaders.map(h=>h.toUpperCase());
-      laporanIdxKet = hUpper.indexOf("KETERANGAN");
-      laporanIdxPet = hUpper.indexOf("PETUGAS");
-      
-      renderLaporanTable();
-      laporanInfo.textContent = "Laporan pemasangan Sanxing (data diperbarui dari GitHub).";
-      
-      // Tampilkan notifikasi
-      showNotification(`Data laporan diperbarui: ${githubRows.length} entri`, "success");
-    } else {
-      laporanInfo.textContent = "Laporan pemasangan Sanxing (data lokal masih yang terbaru).";
-      showNotification(`Data lokal masih yang terbaru: ${laporanRows.length} entri`, "info");
-    }
-  } catch(e){
-    console.error("Gagal refresh laporan", e);
-    laporanInfo.textContent = "Gagal memuat data terbaru (mungkin offline).";
-    showNotification("Gagal memuat data terbaru. Periksa koneksi internet.", "error");
+  // Tampilkan notifikasi
+  if(laporanRows.length > 0){
+    showNotification(`Data laporan diperbarui: ${laporanRows.length} entri`, "success");
   }
 }
 
 /* ===========================
-   CLEAR LOCAL DATA LAPORAN
+   CLEAR DATA (reset dan muat ulang dari GitHub)
 =========================== */
-function clearLocalLaporanData(){
-  // Konfirmasi sebelum menghapus
-  if(!confirm("Yakin ingin menghapus data laporan dari penyimpanan lokal?\n\nData dari GitHub akan diambil ulang saat refresh.")){
+function clearAndReloadLaporanData(){
+  // Konfirmasi
+  if(!confirm("Yakin ingin memuat ulang data laporan dari GitHub?\n\nData akan diambil langsung dari sumber terbaru.")){
     return;
   }
-  
-  const localLaporanKey = "vkrn_laporan_sanxing";
-  
-  // Hapus dari localStorage
-  localStorage.removeItem(localLaporanKey);
   
   // Reset state
   laporanLoaded = false;
   laporanRows = [];
   laporanHeaders = [];
   
-  console.log("Data laporan lokal telah dihapus");
+  // Tampilkan pesan
+  laporanInfo.textContent = "Memuat ulang data dari GitHub...";
   
   // Tampilkan notifikasi
-  showNotification("Data laporan lokal telah dihapus", "success");
+  showNotification("Memuat data terbaru dari GitHub...", "info");
   
-  // Jika sedang di halaman laporan, reload data
-  if(pageLaporan.style.display === "block"){
-    laporanInfo.textContent = "Memuat ulang data laporan...";
-    setTimeout(() => {
-      loadLaporan();
-    }, 500);
-  }
+  // Load ulang dari GitHub
+  setTimeout(() => {
+    loadLaporan();
+  }, 500);
 }
 
 /* ===========================
@@ -1335,10 +1219,10 @@ if(btnRefresh){
 }
 
 /* ===========================
-   TOMBOL CLEAR DATA LOKAL
+   TOMBOL CLEAR DATA LOKAL (sekarang jadi tombol reload)
 =========================== */
 if(btnClearData){
-  btnClearData.addEventListener("click", clearLocalLaporanData);
+  btnClearData.addEventListener("click", clearAndReloadLaporanData);
 }
 
 /* ===========================
@@ -1365,4 +1249,4 @@ document.addEventListener("DOMContentLoaded", ()=>{
 </script>
 
 </body>
-  </html>
+              </html>
